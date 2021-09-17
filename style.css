@@ -25,10 +25,10 @@ body {
   margin-right: 0;
 }
 
-.square {
+.tile {
   width: 200px;
   height: 200px;
-  background-color: lightblue;
+  background-color: lightgray;
   border: 1px solid gray;
 }
 
@@ -41,4 +41,12 @@ body {
 
 h1 {
   text-align: center;
+}
+
+.up {
+  background-color: greenyellow;
+}
+
+.hit {
+  background-color: lightpink;
 }
