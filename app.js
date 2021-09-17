@@ -2,23 +2,46 @@ const main = () => {
   // Methods
   const startGame = () => {
     //(playerName, gameMode)
-    moleTrigger();
+    moleTrigger("on");
+    let countdown = setInterval(timeTrack, 1000);
   };
 
-  const endGame = () => {};
+  const endGame = (countdown) => {
+    moleTrigger("off");
+    clearInterval(countdown);
+    renderGameOver();
+  };
 
   const randomMinMax = (min, max) => {
     // Generates a random value between defined min, max
     return Math.ceil(Math.random() * (max - min)) + min;
   };
 
-  const moleTrigger = () => {
-    console.log("moleTrigger called");
-    //set random duration between 0.5-2.0s
-    let duration = randomMinMax(500, 2000);
-    //set delay in 0.1s divisions between 0.3-2.0s
-    let delay = randomMinMax(300, 2000);
-    setTimeout(moleUp(duration), delay);
+  const timeTrack = () => {
+    console.log("time", timeLeft);
+    if (timeLeft > 6) {
+      timeLeft--;
+      renderTimer("normal");
+    } else if (timeLeft > 0 && timeLeft <= 6) {
+      timeLeft--;
+      renderTimer("hurry");
+    } else if (timeLeft === 0) {
+      // clearInterval(countdown);
+      endGame(countdown); //! to fix
+    }
+  };
+
+  const moleTrigger = (state) => {
+    if (state === "on") {
+      console.log("moleTrigger called");
+      //set random duration between 0.5-2.0s
+      let duration = randomMinMax(500, 2000);
+      //set delay in 0.1s divisions between 0.3-2.0s
+      let delay = randomMinMax(300, 2000);
+      setTimeout(moleUp(duration), delay);
+    } else if (state === "off") {
+      return;
+    }
   };
 
   const moleUp = (duration) => () => {
@@ -34,7 +57,7 @@ const main = () => {
     console.log("moleDown called");
     // $tiles.eq(tileId).removeClass("up");
     renderGameBoard(tileId, "down");
-    moleTrigger();
+    moleTrigger("on");
     console.log("-------------");
   };
 
@@ -77,8 +100,12 @@ const main = () => {
       console.log("renderGameboard unhit");
     }
   };
-  const renderTimer = () => {};
-  const renderGameOver = () => {};
+  const renderTimer = (state) => {
+    $timer.attr("class", state).text(timeLeft);
+  };
+  const renderGameOver = () => {
+    alert("GAMEOVER");
+  };
 
   // Init data
   const grid = {
@@ -87,7 +114,7 @@ const main = () => {
     duration: "",
   };
   let playerName = "";
-  let timer = 60;
+  let timeLeft = 10;
   let score = 0;
   let missed = 0;
   let gameMode = "";
@@ -99,6 +126,7 @@ const main = () => {
   const $hard = $("#btn-hard");
   const $play = $("#btn-play");
   const $tiles = $(".tile");
+  const $timer = $("#timer");
   const $score = $("#score");
 
   startGame();
