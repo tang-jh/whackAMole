@@ -1,0 +1,44 @@
+body {
+  width: 90%;
+  margin: 0 auto;
+  font-family: "Press Start 2P", cursive;
+}
+
+#start-screen {
+  display: none;
+  text-align: center;
+}
+
+#screen-splash {
+  height: 500px;
+}
+
+#timer-container {
+  display: inline-block;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+#score-container {
+  display: inline-block;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.square {
+  width: 200px;
+  height: 200px;
+  background-color: lightblue;
+  border: 1px solid gray;
+}
+
+#gameboard {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10% auto;
+  width: 700px;
+}
+
+h1 {
+  text-align: center;
+}

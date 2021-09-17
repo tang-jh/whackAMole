@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/style.css" />
+    <title>Whack-A-Mole!</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/app.js"></script>
+  </head>
+  <body>
+    <div id="start-screen">
+      <h1>Whack-a-Mole!!!</h1>
+      <img id="screen-splash" src="/images/splash.jpg" alt="" />
+      <div>
+        <input id="playername" type="text" />
+        <div id="modes">
+          <button id="easy">Easy</button>
+          <button id="normal">Normal</button>
+          <button id="hard">Hard</button>
+        </div>
+        <button id="btn-play">Play!</button>
+      </div>
+    </div>
+
+    <div id="game-screen">
+      <div id="hud">
+        <div id="timer-container">
+          <p>Time left: <span id="timer"></span></p>
+        </div>
+        <div id="score-container">
+          <p>Score: <span id="score"></span></p>
+        </div>
+      </div>
+
+      <div id="gameboard">
+        <div class="square" id="1"></div>
+        <div class="square" id="2"></div>
+        <div class="square" id="3"></div>
+      </div>
+    </div>
+  </body>
+</html>
