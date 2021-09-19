@@ -1,15 +1,51 @@
 const main = () => {
   // Methods
-  const startGame = () => {
+  const startGame = (name, mode) => {
     //(playerName, gameMode)
-    moleTrigger("on");
-    let countdown = setInterval(timeTrack, 1000);
+    // Init game data
+    game.playerName = name || "Player 1";
+    game.timeLeft = 10;
+    game.score = 0;
+    game.missed = 0;
+    game.gameMode = mode;
+
+    console.log(`playername = ${game.playerName}`);
+    console.log(`gamemode = ${mode}`);
+
+    // Set duration and delay min and max value based on difficulty
+    game.duration.min = 300;
+    game.duration.max = 700;
+    game.delay.min = 500;
+    game.delay.max = 1000;
+
+    // Set time limit and start game engine
+    moleTrigger();
+    $tiles.on("mousedown", hammerPress);
+    // let countdownRef;
+    let countdownRef = setInterval(() => {
+      console.log(`timeTrack called. Time: ${game.timeLeft}`);
+      if (game.timeLeft > 6) {
+        game.timeLeft--;
+        renderTimer("normal");
+      } else if (game.timeLeft > 0 && game.timeLeft <= 6) {
+        game.timeLeft--;
+        renderTimer("hurry");
+      } else if (game.timeLeft === 0) {
+        console.log(`timeTrack end. timeLeft = ${game.timeLeft}`);
+        renderGameOver();
+        clearInterval(countdownRef);
+      }
+    }, 1000);
   };
 
-  const endGame = (countdown) => {
-    moleTrigger("off");
-    clearInterval(countdown);
-    renderGameOver();
+  const modeSelection = (e) => {
+    for (let i = 0; i < $(e.target).parent().children().length; i++) {
+      if ($(e.target).parent().children().eq(i) !== $(e.target).attr("id")) {
+        $(e.target).parent().children().eq(i).removeClass("pushed");
+      }
+      $(e.target).addClass("pushed");
+      return $(e.target).attr("id");
+    }
   };
 
   const randomMinMax = (min, max) => {
@@ -17,37 +53,20 @@ const main = () => {
     return Math.ceil(Math.random() * (max - min)) + min;
   };
 
-  const timeTrack = () => {
-    console.log("time", timeLeft);
-    if (timeLeft > 6) {
-      timeLeft--;
-      renderTimer("normal");
-    } else if (timeLeft > 0 && timeLeft <= 6) {
-      timeLeft--;
-      renderTimer("hurry");
-    } else if (timeLeft === 0) {
-      // clearInterval(countdown);
-      endGame(countdown); //! to fix
-    }
-  };
-
-  const moleTrigger = (state) => {
-    if (state === "on") {
+  const moleTrigger = () => {
+    if (game.timeLeft > 0) {
       console.log("moleTrigger called");
-      //set random duration between 0.5-2.0s
-      let duration = randomMinMax(500, 2000);
-      //set delay in 0.1s divisions between 0.3-2.0s
-      let delay = randomMinMax(300, 2000);
+      let duration = randomMinMax(game.duration.min, game.duration.max);
+      let delay = randomMinMax(game.delay.min, game.delay.max);
       setTimeout(moleUp(duration), delay);
-    } else if (state === "off") {
+    } else if (game.timeLeft === 0) {
       return;
     }
   };
 
   const moleUp = (duration) => () => {
     console.log("moleup called");
-    const tileId = Math.floor(Math.random() * 9); //gridsize variable
-    // $tiles.eq(tileId).addClass("up");
+    const tileId = Math.floor(Math.random() * 9);
     renderGameBoard(tileId, "up");
     setTimeout(moleDown(tileId), duration);
     console.log("-------------");
@@ -55,33 +74,36 @@ const main = () => {
 
   const moleDown = (tileId) => () => {
     console.log("moleDown called");
-    // $tiles.eq(tileId).removeClass("up");
     renderGameBoard(tileId, "down");
-    moleTrigger("on");
+    moleTrigger();
     console.log("-------------");
   };
 
   const hammerPress = (e) => {
     console.log("hammerPress called");
     if ($(e.currentTarget).hasClass("up")) {
-      // $(e.currentTarget).addClass("hit").removeClass("up");
       const tileId = $(e.currentTarget).attr("id");
+      if (Math.ceil(Math.random() * 10) > 8) {
+        moleTrigger();
+      }
       renderGameBoard(tileId, "hit");
       setTimeout(() => {
         $(e.currentTarget).removeClass("hit");
       }, 200);
-      score++;
-      renderScore(score);
+      game.score++;
+      renderScore(game.score);
     } else if (!$(e.currentTarget).hasClass("hit")) {
-      missed++;
-      console.log(randomMinMax(500, 2000));
+      game.missed++;
     }
-    console.log(`Score: ${score} \r Missed: ${missed}`); //* __remove__
+    console.log(`Score: ${game.score} \r Missed: ${game.missed}`); //* __remove__
   };
 
   // Rendering methods
   const renderStartScreen = () => {};
-  const renderGameScreen = (gameMode, player) => {};
+  const renderGameScreen = (gameMode, player) => {
+    $timer.text(game.timeLeft);
+    $score.text(game.score);
+  };
   const renderScore = (score) => {
     $score.text(score);
   };
@@ -101,26 +123,35 @@ const main = () => {
     }
   };
   const renderTimer = (state) => {
-    $timer.attr("class", state).text(timeLeft);
+    $timer.attr("class", state).text(game.timeLeft);
   };
   const renderGameOver = () => {
-    alert("GAMEOVER");
+    const accuracy = (game.score / (game.score + game.missed)) * 100;
+    alert(
+      `GAME OVER\n Your score: ${game.score}\n Accuracy: ${accuracy.toFixed(1)}`
+    );
   };
 
-  // Init data
-  const grid = {
-    id: "",
-    state: "",
-    duration: "",
+  // Game data
+  const game = {
+    playerName: "",
+    timeLeft: 60,
+    score: 0,
+    missed: 0,
+    gameMode: "",
+    duration: {
+      min: 500,
+      max: 2000,
+    },
+    delay: {
+      min: 500,
+      max: 2000,
+    },
   };
-  let playerName = "";
-  let timeLeft = 10;
-  let score = 0;
-  let missed = 0;
-  let gameMode = "";
 
   //   Define element hooks
   const $playername = $("#input-playername");
+  const $modes = $("#modes");
   const $easy = $("#btn-easy");
   const $normal = $("#btn-normal");
   const $hard = $("#btn-hard");
@@ -129,9 +160,30 @@ const main = () => {
   const $timer = $("#timer");
   const $score = $("#score");
 
-  startGame();
+  // const moder = $modes.on("click", (e) => {
+  //   for (let i = 0; i < $(e.target).parent().children().length; i++) {
+  //     if ($(e.target).parent().children().eq(i) !== $(e.target).attr("id")) {
+  //       $(e.target).parent().children().eq(i).removeClass("pushed");
+  //     }
+  //     $(e.target).addClass("pushed");
+  //   }
+  // });
 
-  $tiles.on("mousedown", hammerPress);
+  $modes.on("click", (e) => {
+    for (let i = 0; i < $(e.target).parent().children().length; i++) {
+      if ($(e.target).parent().children().eq(i) !== $(e.target).attr("id")) {
+        $(e.target).parent().children().eq(i).removeClass("pushed");
+      }
+      $(e.target).addClass("pushed");
+    }
+  });
+
+  $play.on("click", () => {
+    const mode = $(".pushed").attr("id");
+    startGame($playername.val(), mode);
+  });
+
+  // startGame();
 };
 
 $(main);

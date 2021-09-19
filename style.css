@@ -5,12 +5,15 @@ body {
 }
 
 #start-screen {
-  display: none;
   text-align: center;
 }
 
 #screen-splash {
   height: 500px;
+}
+
+.pushed {
+  color: cadetblue;
 }
 
 #timer-container {
