@@ -8,7 +8,11 @@ const main = () => {
     game.score = 0;
     game.missed = 0;
     game.gameMode = mode;
+    game.triggerBuffer = 2;
+    game.lastSprint = 5;
+
     const tileOccupancy = {
+      0: 0,
       1: 0,
       2: 0,
       3: 0,
@@ -17,7 +21,6 @@ const main = () => {
       6: 0,
       7: 0,
       8: 0,
-      9: 0,
     };
 
     // Set duration and delay min and max value based on difficulty
@@ -26,16 +29,19 @@ const main = () => {
       game.duration.max = 2000;
       game.delay.min = 500;
       game.delay.max = 2000;
+      game.provokeChance = 10;
     } else if (game.gameMode === "btn-normal") {
       game.duration.min = 400;
       game.duration.max = 1000;
-      game.delay.min = 300;
+      game.delay.min = 400;
       game.delay.max = 1000;
+      game.provokeChance = 20;
     } else if (game.gameMode === "btn-hard") {
-      game.duration.min = 200;
+      game.duration.min = 300;
       game.duration.max = 600;
-      game.delay.min = 100;
+      game.delay.min = 300;
       game.delay.max = 600;
+      game.provokeChance = 50;
     }
 
     renderGameScreen();
@@ -49,12 +55,12 @@ const main = () => {
     // let countdownRef;
     let countdownRef = setInterval(() => {
       console.log(`timeTrack called. Time: ${game.timeLeft}`);
-      if (game.timeLeft > 6) {
-        game.timeLeft--;
+      if (game.timeLeft > game.lastSprint) {
         renderTimer("normal");
-      } else if (game.timeLeft > 0 && game.timeLeft <= 6) {
         game.timeLeft--;
+      } else if (game.timeLeft > 0 && game.timeLeft <= game.lastSprint) {
         renderTimer("hurry");
+        game.timeLeft--;
       } else if (game.timeLeft === 0) {
         renderGameOver();
         clearInterval(countdownRef);
@@ -80,15 +86,24 @@ const main = () => {
     return tileId;
   };
 
+  const provokeMole = (percent) => {
+    // set chance of provoking a new mole
+    if (Math.ceil(Math.random() * 100) < percent) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const moleTrigger = (occupancy) => {
-    if (game.timeLeft > 2) {
+    if (game.timeLeft > game.triggerBuffer) {
       console.log("moleTrigger called");
       let duration = randomMinMax(game.duration.min, game.duration.max);
       let delay = randomMinMax(game.delay.min, game.delay.max);
       setTimeout(() => {
         moleUp(duration, occupancy);
       }, delay);
-    } else if (game.timeLeft <= 2) {
+    } else if (game.timeLeft <= game.triggerBuffer) {
       return;
     }
   };
@@ -96,7 +111,10 @@ const main = () => {
   const moleUp = (duration, occupancy) => {
     console.log("moleup called");
     let tileId = randomTileId(occupancy);
-    occupancy[tileId] = 1;
+    if (tileId === false) {
+      return;
+    }
+    occupancy[tileId] = occupied;
     console.log(occupancy);
     renderGameBoard(tileId, "up");
     setTimeout(() => {
@@ -108,7 +126,7 @@ const main = () => {
 
   const moleDown = (tileId, occupancy) => {
     console.log("moleDown called");
-    occupancy[tileId] = 0;
+    occupancy[tileId] = free;
     console.log(occupancy);
     renderGameBoard(tileId, "down");
     moleTrigger(occupancy);
@@ -119,13 +137,13 @@ const main = () => {
     console.log("hammerPress called");
     if ($(e.currentTarget).hasClass("up")) {
       const tileId = $(e.currentTarget).attr("id");
-      if (Math.ceil(Math.random() * 10) > 8) {
+      if (provokeMole(game.provokeChance)) {
         moleTrigger(occupancy);
       }
       renderGameBoard(tileId, "hit");
       setTimeout(() => {
         renderGameBoard(tileId, "unhit");
-        occupancy[tileId] = 0;
+        occupancy[tileId] = free;
       }, 500);
       game.score++;
       renderScore(game.score);
@@ -150,17 +168,17 @@ const main = () => {
   };
   const renderGameBoard = (id, state) => {
     if (state === "up") {
-      $(`#${id}`).addClass("up").removeClass("retreat");
-      // console.log("renderGameboard up");
+      $(`#${id}`).addClass("up");
+      console.log("renderGameboard up");
     } else if (state === "down") {
-      $(`#${id}`).removeClass("up").addClass("retreat");
-      // console.log("renderGameboard down");
+      $(`#${id}`).removeClass("up");
+      console.log("renderGameboard down");
     } else if (state === "hit") {
       $(`#${id}`).addClass("hit").removeClass("up");
-      // console.log("renderGameboard hit");
+      console.log("renderGameboard hit");
     } else if (state === "unhit") {
       $(`#${id}`).removeClass("hit");
-      // console.log("renderGameboard unhit");
+      console.log("renderGameboard unhit");
     }
   };
   const renderTimer = (state) => {
@@ -182,6 +200,7 @@ const main = () => {
     score: 0,
     missed: 0,
     gameMode: "",
+    triggerBuffer: 2,
     duration: {
       min: 500,
       max: 2000,
@@ -190,7 +209,12 @@ const main = () => {
       min: 500,
       max: 2000,
     },
+    provokeChance: 0,
+    lastSprint: 5,
   };
+  // Enum for mole tile occupancy state
+  const occupied = 1;
+  const free = 0;
 
   //   Define element hooks
   const $playername = $("#input-playername");

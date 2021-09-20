@@ -99,6 +99,8 @@ button:hover {
   height: 200px;
   background-color: lightgray;
   border: 1px solid gray;
+  overflow-y: hidden;
+  animation: retreat 0.3s ease;
 }
 
 h1 {
@@ -107,6 +109,7 @@ h1 {
 
 .up {
   background-color: greenyellow;
+  overflow-y: hidden;
   animation: peek 0.3s ease;
 }
 

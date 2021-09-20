@@ -177,10 +177,10 @@ Leaderboard _Not included in MVP_
 
 #### Requirement
 
-1. Able to store and retrieve user data
+1. Able to store and retrieve single user data
 1. Able to select **one** game mode
-1. Game runs for set period of time
-1. Mole appearing method
+1. Game stops after time is up
+1. Mole appearance engine
    - random hole
    - random time
    - random duration
@@ -193,5 +193,24 @@ Leaderboard _Not included in MVP_
 1. More game difficulty settings
 1. Leaderboard
 1. Better graphics and animations
+
+### Progress
+
+| Task                                                                          |    Not started     |    In-progress     |     Completed      |
+| ----------------------------------------------------------------------------- | :----------------: | :----------------: | :----------------: |
+| Single user data                                                              |                    |                    | :heavy_check_mark: |
+| Able to select one gamemode                                                   |                    |                    | :heavy_check_mark: |
+| Game stops after time is up                                                   |                    |                    | :heavy_check_mark: |
+| Mole appearance engine (procedural method)                                    |                    |                    | :heavy_check_mark: |
+| Hole collision avoidance                                                      |                    |                    | :heavy_check_mark: |
+| Game ends and report scores                                                   |                    |                    | :heavy_check_mark: |
+| Able to restart game                                                          |                    |                    | :heavy_check_mark: |
+| More game difficulty settings (difficulty varies in mole frequency and speed) |                    |                    | :heavy_check_mark: |
+| Leaderboard                                                                   | :heavy_check_mark: |                    |                    |
+| Better graphics and animations                                                |                    | :heavy_check_mark: |                    |
+| Gamestart warmup countdown                                                    | :heavy_check_mark: |                    |                    |
+| Game ending warning counter                                                   | :heavy_check_mark: |                    |                    |
+| Keymapping to enable keyboard input                                           | :heavy_check_mark: |                    |                    |
+| Local 2-player pvp mode (keyboard)                                            | :heavy_check_mark: |                    |                    |
 
 ## References

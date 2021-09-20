@@ -1,13 +1,17 @@
-let teststr;
+const provokeMole = (percent) => {
+  // set chance of provoking a new mole
+  if (Math.ceil(Math.random() * 100) < percent) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
-const str = "normal";
-
-teststr = str;
-
-if (str === "easy") {
-  console.log("easy printed");
-} else if (str === "normal") {
-  console.log("normal printed");
-} else if (str === "hard") {
-  console.log("hard printed");
+let total = 0;
+for (let i = 0; i < 100; i++) {
+  if (provokeMole(50)) {
+    total++;
+  }
 }
+
+console.log(total);
