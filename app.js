@@ -8,23 +8,31 @@ const main = () => {
     game.score = 0;
     game.missed = 0;
     game.gameMode = mode;
+    const tileOccupancy = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+      6: 0,
+      7: 0,
+      8: 0,
+      9: 0,
+    };
 
     // Set duration and delay min and max value based on difficulty
     if (game.gameMode === "btn-easy") {
-      console.log(`set easy`);
       game.duration.min = 500;
       game.duration.max = 2000;
       game.delay.min = 500;
       game.delay.max = 2000;
     } else if (game.gameMode === "btn-normal") {
-      console.log(`set normal`);
-      game.duration.min = 200;
+      game.duration.min = 400;
       game.duration.max = 1000;
       game.delay.min = 300;
       game.delay.max = 1000;
     } else if (game.gameMode === "btn-hard") {
-      console.log(`set hard`);
-      game.duration.min = 150;
+      game.duration.min = 200;
       game.duration.max = 600;
       game.delay.min = 100;
       game.delay.max = 600;
@@ -36,8 +44,8 @@ const main = () => {
     console.log(`gamemode = ${mode}`);
 
     // Set time limit and start game engine
-    moleTrigger();
-    $tiles.on("mousedown", hammerPress);
+    moleTrigger(tileOccupancy);
+    $tiles.on("mousedown", hammerPress(tileOccupancy));
     // let countdownRef;
     let countdownRef = setInterval(() => {
       console.log(`timeTrack called. Time: ${game.timeLeft}`);
@@ -48,7 +56,6 @@ const main = () => {
         game.timeLeft--;
         renderTimer("hurry");
       } else if (game.timeLeft === 0) {
-        console.log(`timeTrack end. timeLeft = ${game.timeLeft}`);
         renderGameOver();
         clearInterval(countdownRef);
       }
@@ -60,49 +67,71 @@ const main = () => {
     return Math.ceil(Math.random() * (max - min)) + min;
   };
 
-  const moleTrigger = () => {
+  const randomTileId = (occupancy) => {
+    if (
+      Object.values(occupancy).every((item) => {
+        item === 1;
+      })
+    ) {
+      return false;
+    }
+    let vacant = Object.keys(occupancy);
+    const tileId = vacant[Math.floor(Math.random() * vacant.length)];
+    return tileId;
+  };
+
+  const moleTrigger = (occupancy) => {
     if (game.timeLeft > 2) {
       console.log("moleTrigger called");
       let duration = randomMinMax(game.duration.min, game.duration.max);
       let delay = randomMinMax(game.delay.min, game.delay.max);
-      setTimeout(moleUp(duration), delay);
+      setTimeout(() => {
+        moleUp(duration, occupancy);
+      }, delay);
     } else if (game.timeLeft <= 2) {
       return;
     }
   };
 
-  const moleUp = (duration) => () => {
+  const moleUp = (duration, occupancy) => {
     console.log("moleup called");
-    const tileId = Math.floor(Math.random() * 9);
+    let tileId = randomTileId(occupancy);
+    occupancy[tileId] = 1;
+    console.log(occupancy);
     renderGameBoard(tileId, "up");
-    setTimeout(moleDown(tileId), duration);
+    setTimeout(() => {
+      moleDown(tileId, occupancy);
+    }, duration);
+
     console.log("-------------");
   };
 
-  const moleDown = (tileId) => () => {
+  const moleDown = (tileId, occupancy) => {
     console.log("moleDown called");
+    occupancy[tileId] = 0;
+    console.log(occupancy);
     renderGameBoard(tileId, "down");
-    moleTrigger();
+    moleTrigger(occupancy);
     console.log("-------------");
   };
 
-  const hammerPress = (e) => {
+  const hammerPress = (occupancy) => (e) => {
     console.log("hammerPress called");
     if ($(e.currentTarget).hasClass("up")) {
       const tileId = $(e.currentTarget).attr("id");
       if (Math.ceil(Math.random() * 10) > 8) {
-        moleTrigger();
+        moleTrigger(occupancy);
       }
       renderGameBoard(tileId, "hit");
       setTimeout(() => {
-        $(e.currentTarget).removeClass("hit");
-      }, 200);
+        renderGameBoard(tileId, "unhit");
+        occupancy[tileId] = 0;
+      }, 500);
       game.score++;
       renderScore(game.score);
     } else if (!$(e.currentTarget).hasClass("hit")) {
       game.missed++;
     }
-    console.log(`Score: ${game.score} \r Missed: ${game.missed}`); //* __remove__
   };
 
   // Rendering methods
@@ -121,17 +150,17 @@ const main = () => {
   };
   const renderGameBoard = (id, state) => {
     if (state === "up") {
-      $(`#${id}`).addClass("up");
-      console.log("renderGameboard up");
+      $(`#${id}`).addClass("up").removeClass("retreat");
+      // console.log("renderGameboard up");
     } else if (state === "down") {
-      $(`#${id}`).removeClass("up");
-      console.log("renderGameboard down");
+      $(`#${id}`).removeClass("up").addClass("retreat");
+      // console.log("renderGameboard down");
     } else if (state === "hit") {
       $(`#${id}`).addClass("hit").removeClass("up");
-      console.log("renderGameboard hit");
-    } else if (state === "hit") {
-      $(`#${id}`).removeClass("unhit");
-      console.log("renderGameboard unhit");
+      // console.log("renderGameboard hit");
+    } else if (state === "unhit") {
+      $(`#${id}`).removeClass("hit");
+      // console.log("renderGameboard unhit");
     }
   };
   const renderTimer = (state) => {
