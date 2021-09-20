@@ -9,14 +9,31 @@ const main = () => {
     game.missed = 0;
     game.gameMode = mode;
 
+    // Set duration and delay min and max value based on difficulty
+    if (game.gameMode === "btn-easy") {
+      console.log(`set easy`);
+      game.duration.min = 500;
+      game.duration.max = 2000;
+      game.delay.min = 500;
+      game.delay.max = 2000;
+    } else if (game.gameMode === "btn-normal") {
+      console.log(`set normal`);
+      game.duration.min = 200;
+      game.duration.max = 1000;
+      game.delay.min = 300;
+      game.delay.max = 1000;
+    } else if (game.gameMode === "btn-hard") {
+      console.log(`set hard`);
+      game.duration.min = 150;
+      game.duration.max = 600;
+      game.delay.min = 100;
+      game.delay.max = 600;
+    }
+
+    renderGameScreen();
+
     console.log(`playername = ${game.playerName}`);
     console.log(`gamemode = ${mode}`);
-
-    // Set duration and delay min and max value based on difficulty
-    game.duration.min = 300;
-    game.duration.max = 700;
-    game.delay.min = 500;
-    game.delay.max = 1000;
 
     // Set time limit and start game engine
     moleTrigger();
@@ -54,12 +71,12 @@ const main = () => {
   };
 
   const moleTrigger = () => {
-    if (game.timeLeft > 0) {
+    if (game.timeLeft > 2) {
       console.log("moleTrigger called");
       let duration = randomMinMax(game.duration.min, game.duration.max);
       let delay = randomMinMax(game.delay.min, game.delay.max);
       setTimeout(moleUp(duration), delay);
-    } else if (game.timeLeft === 0) {
+    } else if (game.timeLeft <= 2) {
       return;
     }
   };
@@ -99,8 +116,13 @@ const main = () => {
   };
 
   // Rendering methods
-  const renderStartScreen = () => {};
-  const renderGameScreen = (gameMode, player) => {
+  const renderStartScreen = () => {
+    $gameOver.toggleClass("on-screen off-screen");
+    $startScreen.toggleClass("on-screen off-screen");
+  };
+  const renderGameScreen = () => {
+    $startScreen.toggleClass("on-screen off-screen");
+    $gameScreen.toggleClass("on-screen off-screen");
     $timer.text(game.timeLeft);
     $score.text(game.score);
   };
@@ -127,9 +149,11 @@ const main = () => {
   };
   const renderGameOver = () => {
     const accuracy = (game.score / (game.score + game.missed)) * 100;
-    alert(
-      `GAME OVER\n Your score: ${game.score}\n Accuracy: ${accuracy.toFixed(1)}`
-    );
+    $nameReport.text(game.playerName);
+    $scoreReport.text(game.score);
+    $accuracyReport.text(accuracy.toFixed(1));
+    $gameScreen.toggleClass("on-screen off-screen");
+    $gameOver.toggleClass("on-screen off-screen");
   };
 
   // Game data
@@ -152,22 +176,20 @@ const main = () => {
   //   Define element hooks
   const $playername = $("#input-playername");
   const $modes = $("#modes");
-  const $easy = $("#btn-easy");
-  const $normal = $("#btn-normal");
-  const $hard = $("#btn-hard");
+  // const $easy = $("#btn-easy");
+  // const $normal = $("#btn-normal");
+  // const $hard = $("#btn-hard");
   const $play = $("#btn-play");
   const $tiles = $(".tile");
   const $timer = $("#timer");
   const $score = $("#score");
-
-  // const moder = $modes.on("click", (e) => {
-  //   for (let i = 0; i < $(e.target).parent().children().length; i++) {
-  //     if ($(e.target).parent().children().eq(i) !== $(e.target).attr("id")) {
-  //       $(e.target).parent().children().eq(i).removeClass("pushed");
-  //     }
-  //     $(e.target).addClass("pushed");
-  //   }
-  // });
+  const $startScreen = $("#start-screen");
+  const $gameScreen = $("#game-screen");
+  const $gameOver = $("#game-over");
+  const $nameReport = $("#name-report");
+  const $scoreReport = $("#score-report");
+  const $accuracyReport = $("#accuracy-report");
+  const $playAgain = $("#play-again");
 
   $modes.on("click", (e) => {
     for (let i = 0; i < $(e.target).parent().children().length; i++) {
@@ -183,7 +205,9 @@ const main = () => {
     startGame($playername.val(), mode);
   });
 
-  // startGame();
+  $playAgain.on("click", () => {
+    renderStartScreen();
+  });
 };
 
 $(main);

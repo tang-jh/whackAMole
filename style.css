@@ -4,12 +4,47 @@ body {
   font-family: "Press Start 2P", cursive;
 }
 
-#start-screen {
-  text-align: center;
+.on-screen {
+  display: block;
+  transition: ease;
+}
+
+.off-screen {
+  display: none;
+  transition: ease;
 }
 
 #screen-splash {
   height: 500px;
+}
+
+#start-screen {
+  text-align: center;
+}
+
+#game-board {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10% auto;
+  width: 700px;
+}
+
+#game-over {
+  padding: 10%;
+}
+#report {
+  text-align: center;
+  background-color: lightblue;
+  width: 600px;
+  height: 300px;
+  border-radius: 3em;
+  padding: 5%;
+  margin-bottom: 5rem;
+}
+#play-again {
+  text-align: center;
+  width: 600px;
+  height: 50px;
 }
 
 .pushed {
@@ -33,13 +68,6 @@ body {
   height: 200px;
   background-color: lightgray;
   border: 1px solid gray;
-}
-
-#gameboard {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 10% auto;
-  width: 700px;
 }
 
 h1 {

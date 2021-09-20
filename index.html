@@ -20,21 +20,21 @@
     <script src="/app.js"></script>
   </head>
   <body>
-    <div id="start-screen">
+    <div id="start-screen" class="on-screen">
       <h1>Whack-a-Mole!!!</h1>
       <img id="screen-splash" src="/images/splash.jpg" alt="" />
       <div>
         <input id="input-playername" type="text" />
         <div id="modes">
-          <button id="btn-easy">Easy</button>
-          <button id="btn-normal">Normal</button>
-          <button id="btn-hard">Hard</button>
+          <button id="btn-easy" class="easy">Easy</button>
+          <button id="btn-normal" class="normal">Normal</button>
+          <button id="btn-hard" class="hard">Hard</button>
         </div>
         <button id="btn-play">Play!</button>
       </div>
     </div>
 
-    <div id="game-screen">
+    <div id="game-screen" class="off-screen">
       <div id="hud">
         <div id="timer-container">
           <p>Time left: <span id="timer"></span></p>
@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <div id="gameboard">
+      <div id="game-board">
         <div class="tile" id="0"></div>
         <div class="tile" id="1"></div>
         <div class="tile" id="2"></div>
@@ -54,6 +54,18 @@
         <div class="tile" id="6"></div>
         <div class="tile" id="7"></div>
         <div class="tile" id="8"></div>
+      </div>
+    </div>
+
+    <div id="game-over" class="off-screen">
+      <div id="report">
+        <p>Game Over!</p>
+        <p id="name-report"></p>
+        <p>Your Score: <span id="score-report"></span></p>
+        <p>Accuracy: <span id="accuracy-report"></span></p>
+      </div>
+      <div>
+        <button id="play-again">Play Again?</button>
       </div>
     </div>
   </body>
