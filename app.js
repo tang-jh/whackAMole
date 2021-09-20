@@ -55,16 +55,6 @@ const main = () => {
     }, 1000);
   };
 
-  const modeSelection = (e) => {
-    for (let i = 0; i < $(e.target).parent().children().length; i++) {
-      if ($(e.target).parent().children().eq(i) !== $(e.target).attr("id")) {
-        $(e.target).parent().children().eq(i).removeClass("pushed");
-      }
-      $(e.target).addClass("pushed");
-      return $(e.target).attr("id");
-    }
-  };
-
   const randomMinMax = (min, max) => {
     // Generates a random value between defined min, max
     return Math.ceil(Math.random() * (max - min)) + min;
@@ -175,7 +165,7 @@ const main = () => {
 
   //   Define element hooks
   const $playername = $("#input-playername");
-  const $modes = $("#modes");
+  const $modes = $(".mode");
   // const $easy = $("#btn-easy");
   // const $normal = $("#btn-normal");
   // const $hard = $("#btn-hard");
@@ -192,11 +182,16 @@ const main = () => {
   const $playAgain = $("#play-again");
 
   $modes.on("click", (e) => {
-    for (let i = 0; i < $(e.target).parent().children().length; i++) {
-      if ($(e.target).parent().children().eq(i) !== $(e.target).attr("id")) {
-        $(e.target).parent().children().eq(i).removeClass("pushed");
+    if ($(e.currentTarget).attr("class") === "mode") {
+      for (let i = 0; i < $(e.currentTarget).parent().children().length; i++) {
+        if (
+          $(e.currentTarget).parent().children().eq(i) !==
+          $(e.currentTarget).attr("id")
+        ) {
+          $(e.currentTarget).parent().children().eq(i).removeClass("pushed");
+        }
+        $(e.currentTarget).addClass("pushed");
       }
-      $(e.target).addClass("pushed");
     }
   });
 
