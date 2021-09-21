@@ -22,27 +22,6 @@ const main = () => {
       8: 0,
     };
 
-    // Set duration and delay min and max value based on difficulty
-    // if (game.gameMode === "btn-easy") {
-    //   game.duration.min = 500;
-    //   game.duration.max = 2000;
-    //   game.delay.min = 500;
-    //   game.delay.max = 2000;
-    //   game.provokeChance = 10;
-    // } else if (game.gameMode === "btn-normal") {
-    //   game.duration.min = 400;
-    //   game.duration.max = 1000;
-    //   game.delay.min = 400;
-    //   game.delay.max = 1000;
-    //   game.provokeChance = 20;
-    // } else if (game.gameMode === "btn-hard") {
-    //   game.duration.min = 300;
-    //   game.duration.max = 600;
-    //   game.delay.min = 300;
-    //   game.delay.max = 600;
-    //   game.provokeChance = 50;
-    // }
-
     renderGameScreen();
 
     let preTime = 3;
@@ -60,7 +39,8 @@ const main = () => {
     const gameRun = () => {
       // Set time limit and start game engine
       moleTrigger(tileOccupancy, game.gameMode);
-      $tiles.on("mousedown", hammerPress(tileOccupancy, game.gameMode));
+      $tiles.on("mousedown", hammerClick(tileOccupancy, game.gameMode));
+      $(document).on("keydown", hammerPress());
       // let countdownRef;
       let countdownRef = setInterval(() => {
         console.log(`timeTrack called. Time: ${game.timeLeft}`);
@@ -76,6 +56,18 @@ const main = () => {
         }
       }, 1000);
     };
+  };
+
+  const buttonSelection = (target, commonClass, addedClass) => {
+    const $siblings = target.parent().children();
+    if (target.attr("class") === commonClass) {
+      for (let i = 0; i < $siblings.length; i++) {
+        if ($siblings.eq(i) !== target.attr("id")) {
+          $siblings.eq(i).removeClass(addedClass);
+        }
+        target.addClass(addedClass);
+      }
+    }
   };
 
   const randomMinMax = (min, max) => {
@@ -145,11 +137,30 @@ const main = () => {
     console.log("-------------");
   };
 
-  const hammerPress = (occupancy, mode) => (e) => {
-    console.log("hammerPress called");
+  const hammerClick = (occupancy, mode) => (e) => {
+    console.log("hammerClick called");
     const $target = $(e.currentTarget);
-    if ($target.hasClass(UP)) {
-      const tileId = $target.attr("id");
+    // if ($target.hasClass(UP)) {
+    //   const tileId = $target.attr("id");
+    //   if (provokeMole(game.modeSetting[mode].provokeChance)) {
+    //     console.log("PROVOKED MOLE");
+    //     moleTrigger(occupancy, mode);
+    //   }
+    //   renderGameBoard(tileId, HIT);
+    //   setTimeout(() => {
+    //     renderGameBoard(tileId, UNHIT);
+    //     occupancy[tileId] = FREE;
+    //   }, 500);
+    //   game.score++;
+    //   renderScore(game.score);
+    // } else if (!$target.hasClass(HIT)) {
+    //   game.missed++;
+    // }
+  };
+
+  const hammerCheck = (target, player, occupancy, mode) => {
+    if (target.hasClass(UP)) {
+      const tileId = target.attr("id");
       if (provokeMole(game.modeSetting[mode].provokeChance)) {
         console.log("PROVOKED MOLE");
         moleTrigger(occupancy, mode);
@@ -161,12 +172,28 @@ const main = () => {
       }, 500);
       game.score++;
       renderScore(game.score);
-    } else if (!$target.hasClass(HIT)) {
+    } else if (!target.hasClass(HIT)) {
       game.missed++;
     }
   };
 
+  const hammerPress = (keymap) => (e) => {
+    console.log(e.key);
+    if (keymap[e.key]) {
+    }
+  };
+
   // Rendering methods
+  const renderNameInput = (playermode) => {
+    if (playermode === SINGLEPLAYER) {
+      $p1Input.addClass("on-screen").removeClass("off-screen");
+      $p2Input.addClass("off-screen").removeClass("on-screen");
+    } else if (playermode === TWOPLAYER) {
+      $p1Input.addClass("on-screen").removeClass("off-screen");
+      $p2Input.addClass("on-screen").removeClass("off-screen");
+    }
+  };
+
   const renderStartScreen = () => {
     $gameOver.toggleClass("on-screen off-screen");
     $startScreen.toggleClass("on-screen off-screen");
@@ -226,10 +253,7 @@ const main = () => {
 
   // Game data
   const game = {
-    playerName: "",
     timeLeft: 60,
-    score: 0,
-    missed: 0,
     gameMode: "",
     modeSetting: {
       "btn-easy": {
@@ -268,6 +292,18 @@ const main = () => {
     },
     lastSprint: 5,
   };
+
+  const player1 = {
+    name: "",
+    score: 0,
+    missed: 0,
+  };
+
+  const player2 = {
+    name: "",
+    score: 0,
+    missed: 0,
+  };
   // Enum values
   const OCCUPIED = 1;
   const FREE = 0;
@@ -276,10 +312,42 @@ const main = () => {
   const DOWN = "down";
   const HIT = "hit";
   const UNHIT = "unhit";
+  const PLAYERMODEBUTTONS = "playermode";
+  const PLAYERMODESELECT = "player-select";
+  const SINGLEPLAYER = "btn-1p";
+  const TWOPLAYER = "btn-2p";
+  const DIFFICULTYBUTTONS = "difficulty";
+  const DIFFICULTYSELECT = "pushed";
+
+  // Keymapping
+  const keymap = {
+    q: { player: "p1", tile: 0 },
+    w: { player: "p1", tile: 1 },
+    e: { player: "p1", tile: 2 },
+    a: { player: "p1", tile: 3 },
+    s: { player: "p1", tile: 4 },
+    d: { player: "p1", tile: 5 },
+    z: { player: "p1", tile: 6 },
+    x: { player: "p1", tile: 7 },
+    c: { player: "p1", tile: 8 },
+    i: { player: "p2", tile: 0 },
+    o: { player: "p2", tile: 1 },
+    p: { player: "p2", tile: 2 },
+    k: { player: "p2", tile: 3 },
+    l: { player: "p2", tile: 4 },
+    ";": { player: "p2", tile: 5 },
+    ",": { player: "p2", tile: 6 },
+    ".": { player: "p2", tile: 7 },
+    "/": { player: "p2", tile: 8 },
+  };
 
   //   Define element hooks
-  const $playername = $("#input-playername");
-  const $modes = $(".mode");
+  const $p1Input = $("#p1-input");
+  const $p2Input = $("#p2-input");
+  const $player1name = $("#input-player1name");
+  const $player2name = $("#input-player2name");
+  const $playerModes = $(".playermode");
+  const $difficulty = $(".difficulty");
   // const $easy = $("#btn-easy");
   // const $normal = $("#btn-normal");
   // const $hard = $("#btn-hard");
@@ -297,17 +365,14 @@ const main = () => {
   const $accuracyReport = $("#accuracy-report");
   const $playAgain = $("#play-again");
 
-  $modes.on("click", (e) => {
+  $playerModes.on("click", (e) => {
     const $target = $(e.currentTarget);
-    const $siblings = $target.parent().children();
-    if ($target.attr("class") === "mode") {
-      for (let i = 0; i < $siblings.length; i++) {
-        if ($siblings.eq(i) !== $target.attr("id")) {
-          $siblings.eq(i).removeClass("pushed");
-        }
-        $target.addClass("pushed");
-      }
-    }
+    buttonSelection($target, PLAYERMODEBUTTONS, PLAYERMODESELECT);
+    renderNameInput($target.attr("id"));
+  });
+
+  $difficulty.on("click", (e) => {
+    buttonSelection($(e.currentTarget), DIFFICULTYBUTTONS, DIFFICULTYSELECT);
   });
 
   $play.on("click", () => {

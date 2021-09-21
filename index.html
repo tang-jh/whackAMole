@@ -23,16 +23,39 @@
     <div id="start-screen" class="on-screen">
       <h1>Whack-a-Mole!!!</h1>
       <img id="screen-splash" src="/images/splash.jpg" alt="" />
-      <div>
-        <input
-          id="input-playername"
-          type="text"
-          placeholder="Enter your name"
-        />
-        <div id="modes">
-          <button id="btn-easy" class="mode">Easy</button>
-          <button id="btn-normal" class="mode">Normal</button>
-          <button id="btn-hard" class="mode">Hard</button>
+      <div class="container">
+        <div id="name-container">
+          <div id="p1-input" class="player-input off-screen">
+            <label for="input-player1name">P1</label>
+            <input
+              class="namebox"
+              type="text"
+              id="input-player1name"
+              placeholder="Enter your name"
+            />
+          </div>
+          <div id="p2-input" class="player-input off-screen">
+            <label for="input-player2name">P2</label>
+            <input
+              class="namebox"
+              type="text"
+              id="input-player2name"
+              placeholder="Enter your name"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div id="playermode-container">
+          <button id="btn-1p" class="playermode">1 player</button>
+          <button id="btn-2p" class="playermode">2 player</button>
+        </div>
+      </div>
+      <div class="container">
+        <div id="difficulty-container">
+          <button id="btn-easy" class="difficulty">Easy</button>
+          <button id="btn-normal" class="difficulty">Normal</button>
+          <button id="btn-hard" class="difficulty">Hard</button>
         </div>
         <button id="btn-play">Play!</button>
       </div>
@@ -41,12 +64,17 @@
     <div id="game-screen" class="off-screen">
       <div id="hud">
         <div class="container">
-          <div id="timer-container">
-            <p>Time left: <span id="timer"></span></p>
+          <div id="player1">
+            <div class="player-name"><p id="player1-name">player 1</p></div>
+            <div class="score"><p id="player1-score">5</p></div>
           </div>
-          <div id="score-container">
-            <p>Score: <span id="score"></span></p>
+          <div id="player2">
+            <div class="player-name"><p id="player2-name">player 2</p></div>
+            <div class="score"><p id="player2-score">3</p></div>
           </div>
+        </div>
+        <div class="container">
+          <p id="time-display">Time: <span id="timer"></span></p>
         </div>
       </div>
 

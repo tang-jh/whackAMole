@@ -1,6 +1,6 @@
 body {
   width: 90%;
-  margin: 3rem auto;
+  margin: 1rem auto;
   font-family: "Press Start 2P", cursive;
 }
 
@@ -13,32 +13,66 @@ body {
 
 .on-screen {
   display: block;
-  transition: ease;
+  animation: appear 0.1s ease;
 }
 
 .off-screen {
   display: none;
-  transition: ease;
+  animation: disappear 0.1s ease;
 }
 
 #screen-splash {
   object-fit: cover;
-  width: 350px;
-  height: 350px;
-  border-radius: 10rem;
+  width: 300px;
+  height: 300px;
+  border-radius: 8rem;
   margin: 1rem 0;
 }
 
 #start-screen {
   text-align: center;
 }
+#name-container {
+  display: flex;
+}
+
+.namebox {
+  width: 250px;
+}
+
+.player-input {
+  margin: 1rem;
+}
+
+#playermode-container {
+  width: 400px;
+}
+
+.playermode {
+  width: 350px;
+  height: 40px;
+  margin: 3px;
+  border: 1px solid #4d6b53;
+  color: #4d6b53;
+  background-color: #e9efea;
+}
+
+.player-select {
+  background-color: #e9ffe5;
+  color: #39ff14;
+  border: 3px solid #39ff14;
+}
 
 #game-screen {
   padding-top: 1rem;
 }
 
-#hud {
-  position: relative;
+#player1 {
+  margin-right: 10rem;
+}
+
+#player2 {
+  margin-left: 10rem;
 }
 
 #game-board {
@@ -50,7 +84,7 @@ body {
 #pre-countdown {
   position: relative;
   text-align: center;
-  font-size: 15rem;
+  font-size: 10rem;
   justify-content: center;
 }
 
@@ -59,13 +93,12 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 2rem auto;
   width: 700px;
 }
 
 #warm-up {
   bottom: 0;
-  margin-top: -500px;
+  margin-top: -450px;
 }
 
 #game-over {
@@ -83,10 +116,8 @@ body {
   margin-bottom: 5rem;
 }
 
-#timer-container {
-  display: inline-block;
-  margin-left: 0;
-  margin-right: auto;
+#time-display {
+  font-size: 1.7rem;
 }
 
 #score-container {
@@ -100,7 +131,7 @@ body {
   text-align: center;
 }
 
-.mode {
+.difficulty {
   margin: 1rem;
   width: 150px;
   color: #4f5b66;
@@ -137,7 +168,6 @@ button:hover {
   margin: 15px;
   background-color: lightgray;
   border: 1px solid gray;
-  overflow-y: hidden;
   animation: disappear 0.15s ease;
 }
 
@@ -147,7 +177,6 @@ h1 {
 
 .up {
   background-color: greenyellow;
-  overflow-y: hidden;
   animation: appear 0.15s ease;
 }
 
