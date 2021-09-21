@@ -40,36 +40,45 @@
 
     <div id="game-screen" class="off-screen">
       <div id="hud">
-        <div id="timer-container">
-          <p>Time left: <span id="timer"></span></p>
-        </div>
-        <div id="score-container">
-          <p>Score: <span id="score"></span></p>
+        <div class="container">
+          <div id="timer-container">
+            <p>Time left: <span id="timer"></span></p>
+          </div>
+          <div id="score-container">
+            <p>Score: <span id="score"></span></p>
+          </div>
         </div>
       </div>
 
       <div id="game-board">
-        <div class="tile" id="0"></div>
-        <div class="tile" id="1"></div>
-        <div class="tile" id="2"></div>
-        <div class="tile" id="3"></div>
-        <div class="tile" id="4"></div>
-        <div class="tile" id="5"></div>
-        <div class="tile" id="6"></div>
-        <div class="tile" id="7"></div>
-        <div class="tile" id="8"></div>
+        <div class="container">
+          <div id="game-tiles">
+            <div class="tile" id="0"></div>
+            <div class="tile" id="1"></div>
+            <div class="tile" id="2"></div>
+            <div class="tile" id="3"></div>
+            <div class="tile" id="4"></div>
+            <div class="tile" id="5"></div>
+            <div class="tile" id="6"></div>
+            <div class="tile" id="7"></div>
+            <div class="tile" id="8"></div>
+          </div>
+        </div>
+        <div id="warm-up"><p id="pre-countdown">3</p></div>
       </div>
     </div>
 
     <div id="game-over" class="off-screen">
-      <div id="report">
-        <p>Game Over!</p>
-        <p id="name-report"></p>
-        <p>Your Score: <span id="score-report"></span></p>
-        <p>Accuracy: <span id="accuracy-report"></span></p>
-      </div>
-      <div>
-        <button id="play-again">Play Again?</button>
+      <div class="container">
+        <div id="report">
+          <p>Game Over!</p>
+          <p id="name-report"></p>
+          <p>Your Score: <span id="score-report"></span></p>
+          <p>Accuracy: <span id="accuracy-report"></span></p>
+        </div>
+        <div>
+          <button id="play-again">Play Again?</button>
+        </div>
       </div>
     </div>
   </body>

@@ -8,7 +8,6 @@ const main = () => {
     game.score = 0;
     game.missed = 0;
     game.gameMode = mode;
-    game.triggerBuffer = 2;
     game.lastSprint = 5;
 
     const tileOccupancy = {
@@ -24,48 +23,59 @@ const main = () => {
     };
 
     // Set duration and delay min and max value based on difficulty
-    if (game.gameMode === "btn-easy") {
-      game.duration.min = 500;
-      game.duration.max = 2000;
-      game.delay.min = 500;
-      game.delay.max = 2000;
-      game.provokeChance = 10;
-    } else if (game.gameMode === "btn-normal") {
-      game.duration.min = 400;
-      game.duration.max = 1000;
-      game.delay.min = 400;
-      game.delay.max = 1000;
-      game.provokeChance = 20;
-    } else if (game.gameMode === "btn-hard") {
-      game.duration.min = 300;
-      game.duration.max = 600;
-      game.delay.min = 300;
-      game.delay.max = 600;
-      game.provokeChance = 50;
-    }
+    // if (game.gameMode === "btn-easy") {
+    //   game.duration.min = 500;
+    //   game.duration.max = 2000;
+    //   game.delay.min = 500;
+    //   game.delay.max = 2000;
+    //   game.provokeChance = 10;
+    // } else if (game.gameMode === "btn-normal") {
+    //   game.duration.min = 400;
+    //   game.duration.max = 1000;
+    //   game.delay.min = 400;
+    //   game.delay.max = 1000;
+    //   game.provokeChance = 20;
+    // } else if (game.gameMode === "btn-hard") {
+    //   game.duration.min = 300;
+    //   game.duration.max = 600;
+    //   game.delay.min = 300;
+    //   game.delay.max = 600;
+    //   game.provokeChance = 50;
+    // }
 
     renderGameScreen();
 
-    console.log(`playername = ${game.playerName}`);
-    console.log(`gamemode = ${mode}`);
-
-    // Set time limit and start game engine
-    moleTrigger(tileOccupancy);
-    $tiles.on("mousedown", hammerPress(tileOccupancy));
-    // let countdownRef;
-    let countdownRef = setInterval(() => {
-      console.log(`timeTrack called. Time: ${game.timeLeft}`);
-      if (game.timeLeft > game.lastSprint) {
-        renderTimer("normal");
-        game.timeLeft--;
-      } else if (game.timeLeft > 0 && game.timeLeft <= game.lastSprint) {
-        renderTimer("hurry");
-        game.timeLeft--;
-      } else if (game.timeLeft === 0) {
-        renderGameOver();
-        clearInterval(countdownRef);
+    let preTime = 3;
+    let preCounter = setInterval(() => {
+      if (preTime > 0) {
+        renderPreCountdown(preTime);
+        preTime--;
+      } else if (preTime === 0) {
+        renderPreCountdown(preTime);
+        gameRun();
+        clearInterval(preCounter);
       }
     }, 1000);
+
+    const gameRun = () => {
+      // Set time limit and start game engine
+      moleTrigger(tileOccupancy, game.gameMode);
+      $tiles.on("mousedown", hammerPress(tileOccupancy, game.gameMode));
+      // let countdownRef;
+      let countdownRef = setInterval(() => {
+        console.log(`timeTrack called. Time: ${game.timeLeft}`);
+        if (game.timeLeft > game.lastSprint) {
+          game.timeLeft--;
+          renderTimer("normal");
+        } else if (game.timeLeft > 0 && game.timeLeft <= game.lastSprint) {
+          game.timeLeft--;
+          renderTimer("hurry");
+        } else if (game.timeLeft === 0) {
+          renderGameOver();
+          clearInterval(countdownRef);
+        }
+      }, 1000);
+    };
   };
 
   const randomMinMax = (min, max) => {
@@ -88,66 +98,70 @@ const main = () => {
 
   const provokeMole = (percent) => {
     // set chance of provoking a new mole
-    if (Math.ceil(Math.random() * 100) < percent) {
-      return true;
-    } else {
-      return false;
-    }
+    return Math.ceil(Math.random() * 100) < percent;
   };
 
-  const moleTrigger = (occupancy) => {
-    if (game.timeLeft > game.triggerBuffer) {
+  const moleTrigger = (occupancy, mode) => {
+    if (game.timeLeft > TRIGGERBUFFER) {
       console.log("moleTrigger called");
-      let duration = randomMinMax(game.duration.min, game.duration.max);
-      let delay = randomMinMax(game.delay.min, game.delay.max);
+      let duration = randomMinMax(
+        game.modeSetting[mode].duration.min,
+        game.modeSetting[mode].duration.max
+      );
+      let delay = randomMinMax(
+        game.modeSetting[mode].delay.min,
+        game.modeSetting[mode].delay.max
+      );
       setTimeout(() => {
-        moleUp(duration, occupancy);
+        moleUp(duration, occupancy, mode);
       }, delay);
-    } else if (game.timeLeft <= game.triggerBuffer) {
+    } else if (game.timeLeft <= TRIGGERBUFFER) {
       return;
     }
   };
 
-  const moleUp = (duration, occupancy) => {
+  const moleUp = (duration, occupancy, mode) => {
     console.log("moleup called");
     let tileId = randomTileId(occupancy);
     if (tileId === false) {
       return;
     }
-    occupancy[tileId] = occupied;
+    occupancy[tileId] = OCCUPIED;
     console.log(occupancy);
-    renderGameBoard(tileId, "up");
+    renderGameBoard(tileId, UP); //refactor
     setTimeout(() => {
-      moleDown(tileId, occupancy);
+      moleDown(tileId, occupancy, mode);
     }, duration);
 
     console.log("-------------");
   };
 
-  const moleDown = (tileId, occupancy) => {
+  const moleDown = (tileId, occupancy, mode) => {
     console.log("moleDown called");
-    occupancy[tileId] = free;
+    occupancy[tileId] = FREE;
     console.log(occupancy);
-    renderGameBoard(tileId, "down");
-    moleTrigger(occupancy);
+    renderGameBoard(tileId, DOWN);
+    moleTrigger(occupancy, mode);
     console.log("-------------");
   };
 
-  const hammerPress = (occupancy) => (e) => {
+  const hammerPress = (occupancy, mode) => (e) => {
     console.log("hammerPress called");
-    if ($(e.currentTarget).hasClass("up")) {
-      const tileId = $(e.currentTarget).attr("id");
-      if (provokeMole(game.provokeChance)) {
-        moleTrigger(occupancy);
+    const $target = $(e.currentTarget);
+    if ($target.hasClass(UP)) {
+      const tileId = $target.attr("id");
+      if (provokeMole(game.modeSetting[mode].provokeChance)) {
+        console.log("PROVOKED MOLE");
+        moleTrigger(occupancy, mode);
       }
-      renderGameBoard(tileId, "hit");
+      renderGameBoard(tileId, HIT);
       setTimeout(() => {
-        renderGameBoard(tileId, "unhit");
-        occupancy[tileId] = free;
+        renderGameBoard(tileId, UNHIT);
+        occupancy[tileId] = FREE;
       }, 500);
       game.score++;
       renderScore(game.score);
-    } else if (!$(e.currentTarget).hasClass("hit")) {
+    } else if (!$target.hasClass(HIT)) {
       game.missed++;
     }
   };
@@ -163,21 +177,35 @@ const main = () => {
     $timer.text(game.timeLeft);
     $score.text(game.score);
   };
+
+  const renderPreCountdown = (secs) => {
+    const displayTime = 1;
+    if (secs > displayTime) {
+      $warmup.removeClass("off-screen");
+      $preCountdown.text(secs - displayTime);
+    } else if (secs === displayTime) {
+      $warmup.removeClass("off-screen");
+      $preCountdown.text("Go!");
+    } else if (secs === 0) {
+      $warmup.addClass("off-screen");
+    }
+  };
+
   const renderScore = (score) => {
     $score.text(score);
   };
   const renderGameBoard = (id, state) => {
-    if (state === "up") {
-      $(`#${id}`).addClass("up");
+    if (state === UP) {
+      $(`#${id}`).addClass(UP);
       console.log("renderGameboard up");
-    } else if (state === "down") {
-      $(`#${id}`).removeClass("up");
+    } else if (state === DOWN) {
+      $(`#${id}`).removeClass(UP);
       console.log("renderGameboard down");
-    } else if (state === "hit") {
-      $(`#${id}`).addClass("hit").removeClass("up");
+    } else if (state === HIT) {
+      $(`#${id}`).addClass(HIT).removeClass(UP);
       console.log("renderGameboard hit");
-    } else if (state === "unhit") {
-      $(`#${id}`).removeClass("hit");
+    } else if (state === UNHIT) {
+      $(`#${id}`).removeClass(HIT);
       console.log("renderGameboard unhit");
     }
   };
@@ -185,7 +213,10 @@ const main = () => {
     $timer.attr("class", state).text(game.timeLeft);
   };
   const renderGameOver = () => {
-    const accuracy = (game.score / (game.score + game.missed)) * 100;
+    const accuracy =
+      game.score === 0 && game.missed === 0
+        ? 0
+        : (game.score / (game.score + game.missed)) * 100;
     $nameReport.text(game.playerName);
     $scoreReport.text(game.score);
     $accuracyReport.text(accuracy.toFixed(1));
@@ -200,21 +231,51 @@ const main = () => {
     score: 0,
     missed: 0,
     gameMode: "",
-    triggerBuffer: 2,
-    duration: {
-      min: 500,
-      max: 2000,
+    modeSetting: {
+      "btn-easy": {
+        duration: {
+          min: 500,
+          max: 2000,
+        },
+        delay: {
+          min: 500,
+          max: 2000,
+        },
+        provokeChance: 10,
+      },
+      "btn-normal": {
+        duration: {
+          min: 400,
+          max: 1000,
+        },
+        delay: {
+          min: 400,
+          max: 1000,
+        },
+        provokeChance: 20,
+      },
+      "btn-hard": {
+        duration: {
+          min: 300,
+          max: 600,
+        },
+        delay: {
+          min: 300,
+          max: 600,
+        },
+        provokeChance: 50,
+      },
     },
-    delay: {
-      min: 500,
-      max: 2000,
-    },
-    provokeChance: 0,
     lastSprint: 5,
   };
-  // Enum for mole tile occupancy state
-  const occupied = 1;
-  const free = 0;
+  // Enum values
+  const OCCUPIED = 1;
+  const FREE = 0;
+  const TRIGGERBUFFER = 2;
+  const UP = "up";
+  const DOWN = "down";
+  const HIT = "hit";
+  const UNHIT = "unhit";
 
   //   Define element hooks
   const $playername = $("#input-playername");
@@ -228,6 +289,8 @@ const main = () => {
   const $score = $("#score");
   const $startScreen = $("#start-screen");
   const $gameScreen = $("#game-screen");
+  const $preCountdown = $("#pre-countdown");
+  const $warmup = $("#warm-up");
   const $gameOver = $("#game-over");
   const $nameReport = $("#name-report");
   const $scoreReport = $("#score-report");
@@ -235,15 +298,14 @@ const main = () => {
   const $playAgain = $("#play-again");
 
   $modes.on("click", (e) => {
-    if ($(e.currentTarget).attr("class") === "mode") {
-      for (let i = 0; i < $(e.currentTarget).parent().children().length; i++) {
-        if (
-          $(e.currentTarget).parent().children().eq(i) !==
-          $(e.currentTarget).attr("id")
-        ) {
-          $(e.currentTarget).parent().children().eq(i).removeClass("pushed");
+    const $target = $(e.currentTarget);
+    const $siblings = $target.parent().children();
+    if ($target.attr("class") === "mode") {
+      for (let i = 0; i < $siblings.length; i++) {
+        if ($siblings.eq(i) !== $target.attr("id")) {
+          $siblings.eq(i).removeClass("pushed");
         }
-        $(e.currentTarget).addClass("pushed");
+        $target.addClass("pushed");
       }
     }
   });

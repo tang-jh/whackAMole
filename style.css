@@ -4,6 +4,13 @@ body {
   font-family: "Press Start 2P", cursive;
 }
 
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
 .on-screen {
   display: block;
   transition: ease;
@@ -26,15 +33,45 @@ body {
   text-align: center;
 }
 
+#game-screen {
+  padding-top: 1rem;
+}
+
+#hud {
+  position: relative;
+}
+
 #game-board {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 10% auto;
+  position: relative;
+  margin: 0 auto;
   width: 700px;
 }
 
+#pre-countdown {
+  position: relative;
+  text-align: center;
+  font-size: 15rem;
+  justify-content: center;
+}
+
+#game-tiles {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 2rem auto;
+  width: 700px;
+}
+
+#warm-up {
+  bottom: 0;
+  margin-top: -500px;
+}
+
 #game-over {
-  padding: 10%;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
 }
 #report {
   text-align: center;
@@ -95,12 +132,13 @@ button:hover {
 }
 
 .tile {
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
+  margin: 15px;
   background-color: lightgray;
   border: 1px solid gray;
   overflow-y: hidden;
-  animation: retreat 0.3s ease;
+  animation: disappear 0.15s ease;
 }
 
 h1 {
@@ -110,27 +148,43 @@ h1 {
 .up {
   background-color: greenyellow;
   overflow-y: hidden;
-  animation: peek 0.3s ease;
+  animation: appear 0.15s ease;
 }
 
 .hit {
   background-color: lightpink;
+  animation: hammered 0.15s ease;
 }
 
-@keyframes peek {
+@keyframes appear {
   0% {
-    transform: translateY(200px);
+    transform: scale(1.1);
   }
-  100% {
-    transform: translateY(0);
+  50% {
+    transform: scale(1.4);
+  }
+  80% {
+    transform: scale(0.9);
   }
 }
 
-@keyframes retreat {
+@keyframes disappear {
   0% {
-    transform: translateY(0);
+    transform: scale(1.1);
   }
-  100% {
-    transform: translateY(200px);
+  50% {
+    transform: scale(0.7);
+  }
+  80% {
+    transform: scale(0.6);
+  }
+}
+
+@keyframes hammered {
+  50% {
+    transform: scaleY(0.6);
+  }
+  60% {
+    transform: scaleY(0.8);
   }
 }
