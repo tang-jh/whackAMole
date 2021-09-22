@@ -215,5 +215,6 @@ Leaderboard _Not included in MVP_
 | Keymapping to enable keyboard input                                           |                    |                    | :heavy_check_mark: |
 | Local 2-player pvp mode (keyboard)                                            |                    |                    | :heavy_check_mark: |
 | User tutorial on start page                                                   | :heavy_check_mark: |                    |                    |
+| Custom keymapping                                                             | :heavy_check_mark: |                    |                    |
 
 ## References

@@ -7,11 +7,11 @@ const main = () => {
     game.difficulty = difficulty;
     game.lastSprint = 5;
 
-    player1.name = $player1name.val() || "Player-1";
+    player1.playername = $player1name.val() || "Player-1";
     player1.score = 0;
     player1.missed = 0;
 
-    player2.name = $player2name.val() || "Player-2";
+    player2.playername = $player2name.val() || "Player-2";
     player2.score = 0;
     player2.missed = 0;
 
@@ -183,7 +183,7 @@ const main = () => {
       }, 500);
       player.score++;
       console.log(`${player}: ${player.score}`);
-      // renderScore(game.score);
+      renderScore(player, player.score);
     } else if (!target.hasClass(HIT)) {
       player.missed++;
     }
@@ -218,14 +218,14 @@ const main = () => {
     if (players === SINGLEPLAYER) {
       console.log("Singleplayer");
       $p2HUD.removeClass("on-screen").addClass("off-screen");
-      $p1NameDisplay.text(player1.name);
+      $p1NameDisplay.text(player1.playername);
       $p1ScoreDisplay.text(player1.score);
     } else if (players === TWOPLAYER) {
       console.log("Twoplayers");
       $p2HUD.removeClass("off-screen").addClass("on-screen");
-      $p1NameDisplay.text(player1.name);
+      $p1NameDisplay.text(player1.playername);
       $p1ScoreDisplay.text(player1.score);
-      $p2NameDisplay.text(player2.name);
+      $p2NameDisplay.text(player2.playername);
       $p2ScoreDisplay.text(player2.score);
     }
     $timer.text(game.timeLeft);
@@ -244,8 +244,16 @@ const main = () => {
     }
   };
 
-  const renderScore = (score) => {
-    $score.text(score);
+  const renderScore = (player, score) => {
+    console.log(`renderScore player: ${player}, score ${score}`);
+    let $target;
+    if (player.id === P1) {
+      $target = $p1ScoreHUD;
+    } else if (player.id === P2) {
+      $target = $p2ScoreHUD;
+    }
+    console.log($target);
+    $target.text(score);
   };
 
   const renderGameBoard = (id, state) => {
@@ -275,15 +283,15 @@ const main = () => {
         : ((score / (score + missed)) * 100).toFixed(1);
     };
     if (players === SINGLEPLAYER) {
-      $p1NameReport.text(player1.name);
+      $p1NameReport.text(player1.playername);
       $p1ScoreReport.text(player1.score);
       $p1AccuracyReport.text(getAccuracy(player1.score, player1.missed));
       $p2ReportContainer.addClass("off-screen");
     } else if (players === TWOPLAYER) {
-      $p1NameReport.text(player1.name);
+      $p1NameReport.text(player1.playername);
       $p1ScoreReport.text(player1.score);
       $p1AccuracyReport.text(getAccuracy(player1.score, player1.missed));
-      $p2NameReport.text(player2.name);
+      $p2NameReport.text(player2.playername);
       $p2ScoreReport.text(player2.score);
       $p2AccuracyReport.text(getAccuracy(player2.score, player2.missed));
       $p2ReportContainer.removeClass("off-screen");
@@ -292,6 +300,25 @@ const main = () => {
     $gameScreen.toggleClass("on-screen off-screen");
     $gameOver.toggleClass("on-screen off-screen");
   };
+
+  //* DATA
+  // Enum values
+  const OCCUPIED = 1;
+  const FREE = 0;
+  const TRIGGERBUFFER = 2;
+  const UP = "up";
+  const DOWN = "down";
+  const HIT = "hit";
+  const UNHIT = "unhit";
+  const PLAYERMODEBUTTONS = "playermode";
+  const PLAYERMODESELECT = "player-select";
+  const SINGLEPLAYER = "btn-1p";
+  const TWOPLAYER = "btn-2p";
+  const DIFFICULTYBUTTONS = "difficulty";
+  const DIFFICULTYSELECT = "pushed";
+  const FLASHCLASS = "flash";
+  const P1 = "player1";
+  const P2 = "player2";
 
   // Game data
   const game = {
@@ -336,54 +363,39 @@ const main = () => {
   };
 
   const player1 = {
-    name: "",
+    id: P1,
+    playername: "",
     score: 0,
     missed: 0,
   };
 
   const player2 = {
-    name: "",
+    id: P2,
+    playername: "",
     score: 0,
     missed: 0,
   };
-  // Enum values
-  const OCCUPIED = 1;
-  const FREE = 0;
-  const TRIGGERBUFFER = 2;
-  const UP = "up";
-  const DOWN = "down";
-  const HIT = "hit";
-  const UNHIT = "unhit";
-  const PLAYERMODEBUTTONS = "playermode";
-  const PLAYERMODESELECT = "player-select";
-  const SINGLEPLAYER = "btn-1p";
-  const TWOPLAYER = "btn-2p";
-  const DIFFICULTYBUTTONS = "difficulty";
-  const DIFFICULTYSELECT = "pushed";
-  const FLASHCLASS = "flash";
-  const P1 = "p1";
-  const P2 = "p2";
 
   // Keymapping
   const keymap = {
-    q: { player: "p1", tile: 0 },
-    w: { player: "p1", tile: 1 },
-    e: { player: "p1", tile: 2 },
-    a: { player: "p1", tile: 3 },
-    s: { player: "p1", tile: 4 },
-    d: { player: "p1", tile: 5 },
-    z: { player: "p1", tile: 6 },
-    x: { player: "p1", tile: 7 },
-    c: { player: "p1", tile: 8 },
-    i: { player: "p2", tile: 0 },
-    o: { player: "p2", tile: 1 },
-    p: { player: "p2", tile: 2 },
-    k: { player: "p2", tile: 3 },
-    l: { player: "p2", tile: 4 },
-    ";": { player: "p2", tile: 5 },
-    ",": { player: "p2", tile: 6 },
-    ".": { player: "p2", tile: 7 },
-    "/": { player: "p2", tile: 8 },
+    q: { player: P1, tile: 0 },
+    w: { player: P1, tile: 1 },
+    e: { player: P1, tile: 2 },
+    a: { player: P1, tile: 3 },
+    s: { player: P1, tile: 4 },
+    d: { player: P1, tile: 5 },
+    z: { player: P1, tile: 6 },
+    x: { player: P1, tile: 7 },
+    c: { player: P1, tile: 8 },
+    i: { player: P2, tile: 0 },
+    o: { player: P2, tile: 1 },
+    p: { player: P2, tile: 2 },
+    k: { player: P2, tile: 3 },
+    l: { player: P2, tile: 4 },
+    ";": { player: P2, tile: 5 },
+    ",": { player: P2, tile: 6 },
+    ".": { player: P2, tile: 7 },
+    "/": { player: P2, tile: 8 },
   };
 
   //* Define element hooks
@@ -403,7 +415,8 @@ const main = () => {
   // Game screen
   const $tiles = $(".tile");
   const $timer = $("#timer");
-  const $score = $("#score");
+  const $p1ScoreHUD = $("#player1-score");
+  const $p2ScoreHUD = $("#player2-score");
   const $startScreen = $("#start-screen");
   const $gameScreen = $("#game-screen");
   const $preCountdown = $("#pre-countdown");
