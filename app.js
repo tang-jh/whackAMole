@@ -190,6 +190,14 @@ const main = () => {
   };
 
   // Rendering methods
+  const renderHelpScreen = (state) => {
+    if (state === OPEN) {
+      $helpScreen.addClass("on-screen").removeClass("off-screen");
+    } else if (state === CLOSE) {
+      $helpScreen.removeClass("on-screen").addClass("off-screen");
+    }
+  };
+
   const renderNameInput = (playermode) => {
     if (playermode === SINGLEPLAYER) {
       $p1Input.addClass("on-screen").removeClass("off-screen");
@@ -218,15 +226,15 @@ const main = () => {
     if (players === SINGLEPLAYER) {
       console.log("Singleplayer");
       $p2HUD.removeClass("on-screen").addClass("off-screen");
-      $p1NameDisplay.text(player1.playername);
-      $p1ScoreDisplay.text(player1.score);
+      $p1NameHUD.text(player1.playername);
+      $p1ScoreHUD.text(player1.score);
     } else if (players === TWOPLAYER) {
       console.log("Twoplayers");
       $p2HUD.removeClass("off-screen").addClass("on-screen");
-      $p1NameDisplay.text(player1.playername);
-      $p1ScoreDisplay.text(player1.score);
-      $p2NameDisplay.text(player2.playername);
-      $p2ScoreDisplay.text(player2.score);
+      $p1NameHUD.text(player1.playername);
+      $p1ScoreHUD.text(player1.score);
+      $p2NameHUD.text(player2.playername);
+      $p2ScoreHUD.text(player2.score);
     }
     $timer.text(game.timeLeft);
   };
@@ -315,6 +323,8 @@ const main = () => {
 
   //* DATA
   // Enum values
+  const OPEN = "open";
+  const CLOSE = "close";
   const OCCUPIED = 1;
   const FREE = 0;
   const TRIGGERBUFFER = 2;
@@ -417,19 +427,21 @@ const main = () => {
   const $p2Input = $("#p2-input");
   const $player1name = $("#input-player1name");
   const $player2name = $("#input-player2name");
-  const $p1NameDisplay = $("#player1-name");
-  const $p1ScoreDisplay = $("#player1-score");
-  const $p2HUD = $("#player2HUD");
-  const $p2NameDisplay = $("#player2-name");
-  const $p2ScoreDisplay = $("#player2-score");
   const $playerModes = $(".playermode");
+  const $helpScreen = $("#user-help");
+  const $btnHelp = $("#btn-help");
+  const $closeHelp = $("#btn-close");
   const $difficulty = $(".difficulty");
   const $play = $("#btn-play");
+
   // Game screen
   const $tiles = $(".tile");
   const $timer = $("#timer");
   const $p1ScoreHUD = $("#player1-score");
+  const $p1NameHUD = $("#player1-name");
+  const $p2HUD = $("#player2HUD");
   const $p2ScoreHUD = $("#player2-score");
+  const $p2NameHUD = $("#player2-name");
   const $startScreen = $("#start-screen");
   const $gameScreen = $("#game-screen");
   const $preCountdown = $("#pre-countdown");
@@ -445,6 +457,14 @@ const main = () => {
   const $p1AccuracyReport = $("#p1-accuracy-report");
   const $p2AccuracyReport = $("#p2-accuracy-report");
   const $playAgain = $("#play-again");
+
+  $closeHelp.on("click", () => {
+    renderHelpScreen(CLOSE);
+  });
+
+  $btnHelp.on("click", () => {
+    renderHelpScreen(OPEN);
+  });
 
   $playerModes.on("click", (e) => {
     const $target = $(e.currentTarget);
