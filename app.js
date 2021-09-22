@@ -4,7 +4,7 @@ const main = () => {
     //(playerName, gameMode)
     // Init game data
     game.timeLeft = 10;
-    game.gameMode = difficulty;
+    game.difficulty = difficulty;
     game.lastSprint = 5;
 
     player1.name = $player1name.val() || "Player-1";
@@ -43,10 +43,12 @@ const main = () => {
 
     const gameRun = () => {
       // Set time limit and start game engine
-      moleTrigger(tileOccupancy, game.gameMode);
-      $tiles.on("mousedown", hammerClick(tileOccupancy, game.gameMode));
-      $(document).on("keydown", hammerPress());
-      // let countdownRef;
+      moleTrigger(tileOccupancy, game.difficulty);
+      $tiles.on("mousedown", hammerClick(tileOccupancy, game.difficulty));
+      $(document).on(
+        "keydown",
+        hammerPress(keymap, tileOccupancy, game.difficulty)
+      );
       let countdownRef = setInterval(() => {
         console.log(`timeTrack called. Time: ${game.timeLeft}`);
         if (game.timeLeft > game.lastSprint) {
@@ -56,7 +58,7 @@ const main = () => {
           game.timeLeft--;
           renderTimer("hurry");
         } else if (game.timeLeft === 0) {
-          renderGameOver();
+          renderGameOver(players);
           clearInterval(countdownRef);
         }
       }, 1000);
@@ -125,7 +127,7 @@ const main = () => {
     }
     occupancy[tileId] = OCCUPIED;
     console.log(occupancy);
-    renderGameBoard(tileId, UP); //refactor
+    renderGameBoard(tileId, UP);
     setTimeout(() => {
       moleDown(tileId, occupancy, difficulty);
     }, duration);
@@ -145,25 +147,29 @@ const main = () => {
   const hammerClick = (occupancy, difficulty) => (e) => {
     console.log("hammerClick called");
     const $target = $(e.currentTarget);
-    // if ($target.hasClass(UP)) {
-    //   const tileId = $target.attr("id");
-    //   if (provokeMole(game.modeSetting[mode].provokeChance)) {
-    //     console.log("PROVOKED MOLE");
-    //     moleTrigger(occupancy, mode);
-    //   }
-    //   renderGameBoard(tileId, HIT);
-    //   setTimeout(() => {
-    //     renderGameBoard(tileId, UNHIT);
-    //     occupancy[tileId] = FREE;
-    //   }, 500);
-    //   game.score++;
-    //   renderScore(game.score);
-    // } else if (!$target.hasClass(HIT)) {
-    //   game.missed++;
-    // }
+    hammerCheck($target, player1, occupancy, difficulty);
+  };
+
+  const hammerPress = (keymap, occupancy, difficulty) => (e) => {
+    console.log(`hammerPress called`);
+    let player;
+    let tile;
+    if (keymap[e.key]) {
+      if (keymap[e.key].player === P1) {
+        player = player1;
+      } else if (keymap[e.key].player === P2) {
+        player = player2;
+      }
+      tile = $tiles.eq(keymap[e.key].tile);
+      console.log(`hammerPress player ${player}, tile ${tile}`);
+    } else {
+      return;
+    }
+    hammerCheck(tile, player, occupancy, difficulty);
   };
 
   const hammerCheck = (target, player, occupancy, difficulty) => {
+    console.log("hammerCheck called");
     if (target.hasClass(UP)) {
       const tileId = target.attr("id");
       if (provokeMole(game.modeSetting[difficulty].provokeChance)) {
@@ -175,18 +181,13 @@ const main = () => {
         renderGameBoard(tileId, UNHIT);
         occupancy[tileId] = FREE;
       }, 500);
-      game.score++;
-      renderScore(game.score);
+      player.score++;
+      console.log(`${player}: ${player.score}`);
+      // renderScore(game.score);
     } else if (!target.hasClass(HIT)) {
-      game.missed++;
+      player.missed++;
     }
   };
-
-  // const hammerPress = (keymap) => (e) => {
-  //   console.log(e.key);
-  //   if (keymap[e.key]) {
-  //   }
-  // };
 
   // Rendering methods
   const renderNameInput = (playermode) => {
@@ -204,10 +205,10 @@ const main = () => {
     $startScreen.toggleClass("on-screen off-screen");
   };
 
-  const renderOptionsNotSelected = (target) => {
-    $(target).addClass(EMPTYOPTIONS);
+  const renderItemFlash = (target) => {
+    $(target).addClass(FLASHCLASS);
     setTimeout(() => {
-      $(target).removeClass(EMPTYOPTIONS);
+      $(target).removeClass(FLASHCLASS);
     }, 100);
   };
 
@@ -246,6 +247,7 @@ const main = () => {
   const renderScore = (score) => {
     $score.text(score);
   };
+
   const renderGameBoard = (id, state) => {
     if (state === UP) {
       $(`#${id}`).addClass(UP);
@@ -261,17 +263,32 @@ const main = () => {
       console.log("renderGameboard unhit");
     }
   };
+
   const renderTimer = (state) => {
     $timer.attr("class", state).text(game.timeLeft);
   };
-  const renderGameOver = () => {
-    const accuracy =
-      game.score === 0 && game.missed === 0
+
+  const renderGameOver = (players) => {
+    const getAccuracy = (score, missed) => {
+      return score === 0 && missed === 0
         ? 0
-        : (game.score / (game.score + game.missed)) * 100;
-    $nameReport.text(game.playerName);
-    $scoreReport.text(game.score);
-    $accuracyReport.text(accuracy.toFixed(1));
+        : ((score / (score + missed)) * 100).toFixed(1);
+    };
+    if (players === SINGLEPLAYER) {
+      $p1NameReport.text(player1.name);
+      $p1ScoreReport.text(player1.score);
+      $p1AccuracyReport.text(getAccuracy(player1.score, player1.missed));
+      $p2ReportContainer.addClass("off-screen");
+    } else if (players === TWOPLAYER) {
+      $p1NameReport.text(player1.name);
+      $p1ScoreReport.text(player1.score);
+      $p1AccuracyReport.text(getAccuracy(player1.score, player1.missed));
+      $p2NameReport.text(player2.name);
+      $p2ScoreReport.text(player2.score);
+      $p2AccuracyReport.text(getAccuracy(player2.score, player2.missed));
+      $p2ReportContainer.removeClass("off-screen");
+    }
+
     $gameScreen.toggleClass("on-screen off-screen");
     $gameOver.toggleClass("on-screen off-screen");
   };
@@ -279,7 +296,7 @@ const main = () => {
   // Game data
   const game = {
     timeLeft: 60,
-    gameMode: "",
+    difficulty: "",
     modeSetting: {
       "btn-easy": {
         duration: {
@@ -343,7 +360,9 @@ const main = () => {
   const TWOPLAYER = "btn-2p";
   const DIFFICULTYBUTTONS = "difficulty";
   const DIFFICULTYSELECT = "pushed";
-  const EMPTYOPTIONS = "absent";
+  const FLASHCLASS = "flash";
+  const P1 = "p1";
+  const P2 = "p2";
 
   // Keymapping
   const keymap = {
@@ -391,9 +410,13 @@ const main = () => {
   const $warmup = $("#warm-up");
   // Game over
   const $gameOver = $("#game-over");
-  const $nameReport = $("#name-report");
-  const $scoreReport = $("#score-report");
-  const $accuracyReport = $("#accuracy-report");
+  const $p1NameReport = $("#p1-name-report");
+  const $p2NameReport = $("#p2-name-report");
+  const $p1ScoreReport = $("#p1-score-report");
+  const $p2ReportContainer = $("#p2-report");
+  const $p2ScoreReport = $("#p2-score-report");
+  const $p1AccuracyReport = $("#p1-accuracy-report");
+  const $p2AccuracyReport = $("#p2-accuracy-report");
   const $playAgain = $("#play-again");
 
   $playerModes.on("click", (e) => {
@@ -410,11 +433,11 @@ const main = () => {
     const difficulty = $(".pushed").attr("id");
     const playermode = $(".player-select").attr("id");
     if (playermode === undefined) {
-      renderOptionsNotSelected($(".playermode"));
+      renderItemFlash($(".playermode"));
       return;
     }
     if (difficulty === undefined) {
-      renderOptionsNotSelected($(".difficulty"));
+      renderItemFlash($(".difficulty"));
       return;
     }
     console.log(`player: ${playermode}, difficulty: ${difficulty}`);

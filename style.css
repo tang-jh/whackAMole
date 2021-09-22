@@ -21,6 +21,10 @@ body {
   animation: disappear 0.1s ease;
 }
 
+.flash {
+  animation: appear 0.1s;
+}
+
 #screen-splash {
   object-fit: cover;
   width: 300px;
@@ -110,10 +114,24 @@ body {
   text-align: center;
   background-color: lightblue;
   width: 600px;
-  height: 300px;
+  height: 400px;
   border-radius: 3em;
   padding: 5%;
-  margin-bottom: 5rem;
+  margin: 5rem;
+}
+
+#report-title {
+  font-size: 1.5rem;
+}
+
+#p1-report {
+  color: mediumblue;
+  margin: 2rem;
+}
+
+#p2-report {
+  color: mediumvioletred;
+  margin: 2rem;
 }
 
 #time-display {
@@ -216,8 +234,4 @@ h1 {
   60% {
     transform: scaleY(0.8);
   }
-}
-
-.absent {
-  animation: appear 0.1s;
 }

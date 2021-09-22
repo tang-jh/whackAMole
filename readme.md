@@ -193,6 +193,8 @@ Leaderboard _Not included in MVP_
 1. More game difficulty settings
 1. Leaderboard
 1. Better graphics and animations
+1. Local 2-player pvp
+1. Custom keymapping
 
 ### Progress
 
@@ -208,9 +210,10 @@ Leaderboard _Not included in MVP_
 | More game difficulty settings (difficulty varies in mole frequency and speed) |                    |                    | :heavy_check_mark: |
 | Leaderboard                                                                   | :heavy_check_mark: |                    |                    |
 | Better graphics and animations                                                |                    | :heavy_check_mark: |                    |
-| Gamestart warmup countdown                                                    | :heavy_check_mark: |                    |                    |
+| Gamestart warmup countdown                                                    |                    |                    | :heavy_check_mark: |
 | Game ending warning counter                                                   | :heavy_check_mark: |                    |                    |
-| Keymapping to enable keyboard input                                           | :heavy_check_mark: |                    |                    |
-| Local 2-player pvp mode (keyboard)                                            | :heavy_check_mark: |                    |                    |
+| Keymapping to enable keyboard input                                           |                    |                    | :heavy_check_mark: |
+| Local 2-player pvp mode (keyboard)                                            |                    |                    | :heavy_check_mark: |
+| User tutorial on start page                                                   | :heavy_check_mark: |                    |                    |
 
 ## References
