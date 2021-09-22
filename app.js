@@ -1,14 +1,19 @@
 const main = () => {
   // Methods
-  const startGame = (name, mode) => {
+  const startGame = (players, difficulty) => {
     //(playerName, gameMode)
     // Init game data
-    game.playerName = name || "Player 1";
     game.timeLeft = 10;
-    game.score = 0;
-    game.missed = 0;
-    game.gameMode = mode;
+    game.gameMode = difficulty;
     game.lastSprint = 5;
+
+    player1.name = $player1name.val() || "Player-1";
+    player1.score = 0;
+    player1.missed = 0;
+
+    player2.name = $player2name.val() || "Player-2";
+    player2.score = 0;
+    player2.missed = 0;
 
     const tileOccupancy = {
       0: 0,
@@ -22,7 +27,7 @@ const main = () => {
       8: 0,
     };
 
-    renderGameScreen();
+    renderGameScreen(players);
 
     let preTime = 3;
     let preCounter = setInterval(() => {
@@ -93,26 +98,26 @@ const main = () => {
     return Math.ceil(Math.random() * 100) < percent;
   };
 
-  const moleTrigger = (occupancy, mode) => {
+  const moleTrigger = (occupancy, difficulty) => {
     if (game.timeLeft > TRIGGERBUFFER) {
       console.log("moleTrigger called");
       let duration = randomMinMax(
-        game.modeSetting[mode].duration.min,
-        game.modeSetting[mode].duration.max
+        game.modeSetting[difficulty].duration.min,
+        game.modeSetting[difficulty].duration.max
       );
       let delay = randomMinMax(
-        game.modeSetting[mode].delay.min,
-        game.modeSetting[mode].delay.max
+        game.modeSetting[difficulty].delay.min,
+        game.modeSetting[difficulty].delay.max
       );
       setTimeout(() => {
-        moleUp(duration, occupancy, mode);
+        moleUp(duration, occupancy, difficulty);
       }, delay);
     } else if (game.timeLeft <= TRIGGERBUFFER) {
       return;
     }
   };
 
-  const moleUp = (duration, occupancy, mode) => {
+  const moleUp = (duration, occupancy, difficulty) => {
     console.log("moleup called");
     let tileId = randomTileId(occupancy);
     if (tileId === false) {
@@ -122,22 +127,22 @@ const main = () => {
     console.log(occupancy);
     renderGameBoard(tileId, UP); //refactor
     setTimeout(() => {
-      moleDown(tileId, occupancy, mode);
+      moleDown(tileId, occupancy, difficulty);
     }, duration);
 
     console.log("-------------");
   };
 
-  const moleDown = (tileId, occupancy, mode) => {
+  const moleDown = (tileId, occupancy, difficulty) => {
     console.log("moleDown called");
     occupancy[tileId] = FREE;
     console.log(occupancy);
     renderGameBoard(tileId, DOWN);
-    moleTrigger(occupancy, mode);
+    moleTrigger(occupancy, difficulty);
     console.log("-------------");
   };
 
-  const hammerClick = (occupancy, mode) => (e) => {
+  const hammerClick = (occupancy, difficulty) => (e) => {
     console.log("hammerClick called");
     const $target = $(e.currentTarget);
     // if ($target.hasClass(UP)) {
@@ -158,12 +163,12 @@ const main = () => {
     // }
   };
 
-  const hammerCheck = (target, player, occupancy, mode) => {
+  const hammerCheck = (target, player, occupancy, difficulty) => {
     if (target.hasClass(UP)) {
       const tileId = target.attr("id");
-      if (provokeMole(game.modeSetting[mode].provokeChance)) {
+      if (provokeMole(game.modeSetting[difficulty].provokeChance)) {
         console.log("PROVOKED MOLE");
-        moleTrigger(occupancy, mode);
+        moleTrigger(occupancy, difficulty);
       }
       renderGameBoard(tileId, HIT);
       setTimeout(() => {
@@ -177,11 +182,11 @@ const main = () => {
     }
   };
 
-  const hammerPress = (keymap) => (e) => {
-    console.log(e.key);
-    if (keymap[e.key]) {
-    }
-  };
+  // const hammerPress = (keymap) => (e) => {
+  //   console.log(e.key);
+  //   if (keymap[e.key]) {
+  //   }
+  // };
 
   // Rendering methods
   const renderNameInput = (playermode) => {
@@ -198,11 +203,31 @@ const main = () => {
     $gameOver.toggleClass("on-screen off-screen");
     $startScreen.toggleClass("on-screen off-screen");
   };
-  const renderGameScreen = () => {
+
+  const renderOptionsNotSelected = (target) => {
+    $(target).addClass(EMPTYOPTIONS);
+    setTimeout(() => {
+      $(target).removeClass(EMPTYOPTIONS);
+    }, 100);
+  };
+
+  const renderGameScreen = (players) => {
     $startScreen.toggleClass("on-screen off-screen");
     $gameScreen.toggleClass("on-screen off-screen");
+    if (players === SINGLEPLAYER) {
+      console.log("Singleplayer");
+      $p2HUD.removeClass("on-screen").addClass("off-screen");
+      $p1NameDisplay.text(player1.name);
+      $p1ScoreDisplay.text(player1.score);
+    } else if (players === TWOPLAYER) {
+      console.log("Twoplayers");
+      $p2HUD.removeClass("off-screen").addClass("on-screen");
+      $p1NameDisplay.text(player1.name);
+      $p1ScoreDisplay.text(player1.score);
+      $p2NameDisplay.text(player2.name);
+      $p2ScoreDisplay.text(player2.score);
+    }
     $timer.text(game.timeLeft);
-    $score.text(game.score);
   };
 
   const renderPreCountdown = (secs) => {
@@ -318,6 +343,7 @@ const main = () => {
   const TWOPLAYER = "btn-2p";
   const DIFFICULTYBUTTONS = "difficulty";
   const DIFFICULTYSELECT = "pushed";
+  const EMPTYOPTIONS = "absent";
 
   // Keymapping
   const keymap = {
@@ -341,17 +367,21 @@ const main = () => {
     "/": { player: "p2", tile: 8 },
   };
 
-  //   Define element hooks
+  //* Define element hooks
+  // Start screen
   const $p1Input = $("#p1-input");
   const $p2Input = $("#p2-input");
   const $player1name = $("#input-player1name");
   const $player2name = $("#input-player2name");
+  const $p1NameDisplay = $("#player1-name");
+  const $p1ScoreDisplay = $("#player1-score");
+  const $p2HUD = $("#player2HUD");
+  const $p2NameDisplay = $("#player2-name");
+  const $p2ScoreDisplay = $("#player2-score");
   const $playerModes = $(".playermode");
   const $difficulty = $(".difficulty");
-  // const $easy = $("#btn-easy");
-  // const $normal = $("#btn-normal");
-  // const $hard = $("#btn-hard");
   const $play = $("#btn-play");
+  // Game screen
   const $tiles = $(".tile");
   const $timer = $("#timer");
   const $score = $("#score");
@@ -359,6 +389,7 @@ const main = () => {
   const $gameScreen = $("#game-screen");
   const $preCountdown = $("#pre-countdown");
   const $warmup = $("#warm-up");
+  // Game over
   const $gameOver = $("#game-over");
   const $nameReport = $("#name-report");
   const $scoreReport = $("#score-report");
@@ -376,8 +407,18 @@ const main = () => {
   });
 
   $play.on("click", () => {
-    const mode = $(".pushed").attr("id");
-    startGame($playername.val(), mode);
+    const difficulty = $(".pushed").attr("id");
+    const playermode = $(".player-select").attr("id");
+    if (playermode === undefined) {
+      renderOptionsNotSelected($(".playermode"));
+      return;
+    }
+    if (difficulty === undefined) {
+      renderOptionsNotSelected($(".difficulty"));
+      return;
+    }
+    console.log(`player: ${playermode}, difficulty: ${difficulty}`);
+    startGame(playermode, difficulty);
   });
 
   $playAgain.on("click", () => {

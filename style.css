@@ -67,11 +67,11 @@ body {
   padding-top: 1rem;
 }
 
-#player1 {
+#player1HUD {
   margin-right: 10rem;
 }
 
-#player2 {
+#player2HUD {
   margin-left: 10rem;
 }
 
@@ -190,7 +190,7 @@ h1 {
     transform: scale(1.1);
   }
   50% {
-    transform: scale(1.4);
+    transform: scale(1.2);
   }
   80% {
     transform: scale(0.9);
@@ -216,4 +216,8 @@ h1 {
   60% {
     transform: scaleY(0.8);
   }
+}
+
+.absent {
+  animation: appear 0.1s;
 }

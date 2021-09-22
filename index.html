@@ -57,20 +57,24 @@
           <button id="btn-normal" class="difficulty">Normal</button>
           <button id="btn-hard" class="difficulty">Hard</button>
         </div>
-        <button id="btn-play">Play!</button>
       </div>
+      <div class="container"><button id="btn-play">Play!</button></div>
     </div>
 
     <div id="game-screen" class="off-screen">
       <div id="hud">
         <div class="container">
-          <div id="player1">
+          <div id="player1HUD">
             <div class="player-name"><p id="player1-name">player 1</p></div>
-            <div class="score"><p id="player1-score">5</p></div>
+            <div class="score">
+              <p>Score: <span id="player1-score">5</span></p>
+            </div>
           </div>
-          <div id="player2">
+          <div id="player2HUD">
             <div class="player-name"><p id="player2-name">player 2</p></div>
-            <div class="score"><p id="player2-score">3</p></div>
+            <div class="score">
+              <p>Score: <span id="player2-score">3</span></p>
+            </div>
           </div>
         </div>
         <div class="container">
