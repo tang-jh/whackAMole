@@ -211,7 +211,7 @@ Leaderboard _Not included in MVP_
 | Leaderboard                                                                   | :heavy_check_mark: |                    |                    |
 | Better graphics and animations                                                |                    | :heavy_check_mark: |                    |
 | Gamestart warmup countdown                                                    |                    |                    | :heavy_check_mark: |
-| Game ending warning counter                                                   | :heavy_check_mark: |                    |                    |
+| Game ending warning counter                                                   |                    |                    | :heavy_check_mark: |
 | Keymapping to enable keyboard input                                           |                    |                    | :heavy_check_mark: |
 | Local 2-player pvp mode (keyboard)                                            |                    |                    | :heavy_check_mark: |
 | User tutorial on start page                                                   | :heavy_check_mark: |                    |                    |

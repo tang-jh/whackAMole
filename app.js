@@ -29,7 +29,7 @@ const main = () => {
 
     renderGameScreen(players);
 
-    let preTime = 3;
+    let preTime = 4;
     let preCounter = setInterval(() => {
       if (preTime > 0) {
         renderPreCountdown(preTime);
@@ -53,7 +53,7 @@ const main = () => {
         console.log(`timeTrack called. Time: ${game.timeLeft}`);
         if (game.timeLeft > game.lastSprint) {
           game.timeLeft--;
-          renderTimer("normal");
+          renderTimer();
         } else if (game.timeLeft > 0 && game.timeLeft <= game.lastSprint) {
           game.timeLeft--;
           renderTimer("hurry");
@@ -236,9 +236,11 @@ const main = () => {
     if (secs > displayTime) {
       $warmup.removeClass("off-screen");
       $preCountdown.text(secs - displayTime);
+      renderItemFlash($preCountdown);
     } else if (secs === displayTime) {
       $warmup.removeClass("off-screen");
       $preCountdown.text("Go!");
+      renderItemFlash($preCountdown);
     } else if (secs === 0) {
       $warmup.addClass("off-screen");
     }
@@ -273,7 +275,17 @@ const main = () => {
   };
 
   const renderTimer = (state) => {
-    $timer.attr("class", state).text(game.timeLeft);
+    if (state === HURRY) {
+      $timeDisplay.addClass(HURRY);
+      $timer.text(game.timeLeft);
+      renderItemFlash($timeDisplay);
+    } else {
+      $timer.text(game.timeLeft);
+    }
+
+    if (game.timeLeft === 0) {
+      $timeDisplay.removeClass(HURRY);
+    }
   };
 
   const renderGameOver = (players) => {
@@ -319,6 +331,7 @@ const main = () => {
   const FLASHCLASS = "flash";
   const P1 = "player1";
   const P2 = "player2";
+  const HURRY = "hurry";
 
   // Game data
   const game = {
@@ -421,6 +434,7 @@ const main = () => {
   const $gameScreen = $("#game-screen");
   const $preCountdown = $("#pre-countdown");
   const $warmup = $("#warm-up");
+  const $timeDisplay = $("#time-display");
   // Game over
   const $gameOver = $("#game-over");
   const $p1NameReport = $("#p1-name-report");

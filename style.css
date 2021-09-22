@@ -138,6 +138,10 @@ body {
   font-size: 1.7rem;
 }
 
+.hurry {
+  color: red;
+}
+
 #score-container {
   display: inline-block;
   margin-left: auto;
