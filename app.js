@@ -322,6 +322,9 @@ const main = () => {
       return ((score * accuracy) / 100).toFixed(1);
     };
     const getWinner = (p1result, p2result) => {
+      console.log(
+        `p1: ${p1result}, p2: ${p2result}. p1>p2 ${p1result > p2result}`
+      );
       if (p1result === p2result) {
         return DRAW;
       } else if (p1result > p2result) {
@@ -331,19 +334,28 @@ const main = () => {
       }
     };
     if (players === SINGLEPLAYER) {
-      const p1Accuracy = getAccuracy(player1.score, player1.missed);
-      const p1Performance = getPerformance(player1.score, p1Accuracy);
+      const p1Accuracy = parseFloat(getAccuracy(player1.score, player1.missed));
+      const p1Performance = parseFloat(
+        getPerformance(player1.score, p1Accuracy)
+      );
       $p1NameReport.text(player1.playername);
       $p1ScoreReport.text(player1.score);
       $p1AccuracyReport.text(p1Accuracy);
       $p1PerformanceReport.text(p1Performance);
       $p2ReportContainer.addClass(OFFSCREEN);
     } else if (players === TWOPLAYER) {
-      const p1Accuracy = getAccuracy(player1.score, player1.missed);
-      const p1Performance = getPerformance(player1.score, p1Accuracy);
-      const p2Accuracy = getAccuracy(player2.score, player2.missed);
-      const p2Performance = getPerformance(player2.score, p2Accuracy);
-      const winner = getWinner(p1Performance, p2Performance);
+      const p1Accuracy = parseFloat(getAccuracy(player1.score, player1.missed));
+      const p1Performance = parseFloat(
+        getPerformance(player1.score, p1Accuracy)
+      );
+      const p2Accuracy = parseFloat(getAccuracy(player2.score, player2.missed));
+      const p2Performance = parseFloat(
+        getPerformance(player2.score, p2Accuracy)
+      );
+      const winner = getWinner(
+        parseFloat(p1Performance),
+        parseFloat(p2Performance)
+      );
 
       if (winner === DRAW) {
         $p1Win
