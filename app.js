@@ -188,7 +188,7 @@ const main = () => {
       setTimeout(() => {
         renderGameBoard(tileId, UNHIT);
         occupancy[tileId] = FREE;
-      }, 500);
+      }, 300);
       player.score++;
       console.log(`${player}: ${player.score}`);
       renderScore(player, player.score);
@@ -420,36 +420,36 @@ const main = () => {
     modeSetting: {
       "btn-easy": {
         duration: {
-          min: 500,
+          min: 1000,
           max: 2000,
         },
         delay: {
           min: 500,
           max: 2000,
         },
-        provokeChance: 10,
-        limit: 3,
+        provokeChance: 20,
+        limit: 2,
       },
       "btn-normal": {
         duration: {
-          min: 400,
-          max: 1000,
+          min: 500,
+          max: 1500,
         },
         delay: {
-          min: 400,
-          max: 1000,
+          min: 500,
+          max: 1500,
         },
-        provokeChance: 30,
+        provokeChance: 20,
         limit: 3,
       },
       "btn-hard": {
         duration: {
-          min: 300,
-          max: 600,
+          min: 500,
+          max: 700,
         },
         delay: {
-          min: 300,
-          max: 600,
+          min: 400,
+          max: 700,
         },
         provokeChance: 50,
         limit: 4,
