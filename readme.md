@@ -10,146 +10,107 @@ To build a browser game of Whack-a-mole.
 
 ### Data needed:
 
-| data       | type   |
-| ---------- | ------ |
-| playerName | string |
-| gameMode   | string |
-| moleSpeed  | number |
-| timeLeft   | number |
-| score      | number |
-| missed     | number |
+| data    | type   | object attr                                       |
+| ------- | ------ | ------------------------------------------------- |
+| game    | object | timeLeft(str), modeSetting(obj), lastSprint(num)  |
+| player1 | object | id(str), playername(str), score(num), missed(num) |
+| keymap  | object | characters(keys), object(player(str), tile(str))  |
 
 ### Logic needed:
 
-- startGame(gameMode): button
+#### Game engine
 
-  - ==> getPlayerName
-  - ==> set game data (playerName=name, timer=60, score=0)
-  - ==> call renderGameScreen()
-  - ==> start moleTrigger() method
-  - ==> start a countdown timer (setTimeout? setInterval?)
+- `startGame(players, difficulty)`: button method
 
-    - every second game engine method runs
+  - set/reset current game's parameters
+  - render game screen
+  - start the game engine
 
-    ```js
-    //Game init
-    playerName = playername ?? "Player01";
-    timeLeft = 60;
-    score = 0;
-    missed = 0;
+- `moleTrigger(occupancy, difficulty)`: method
 
-    // Render gamescreen
-    renderGameScreen();
+  - method to set a delay and duration value for subsequent mole to be called
+  - time range is based on difficulty setting
 
-    // Run game
-    let gameTimer = setInterval(countdown, 1000);
-    ```
+- `moleUp(duration, occupancy, difficulty)`: method
 
-- gameMode(): button
-- countdown(): method
-  - ==> decrement timeLeft
-  - ==> check if timer === 0; then end game
-  - ==> call renderTimer()
-- gameTimer(): function variable for setInterval
+  - render game board with the appearing mole
+  - update the occupancy matrix
+  - set timed call of retrieving `this` mole
 
-  ```js
-  let gameTimer = setInterval(countdown, 1000);
-  ```
+- `moleDown(tileId, occupancy, difficulty)`: method
 
-- moleTrigger(): method
-  - set random duration between 0.1 to 2.0s that mole will stay out of hole
-  - call moleUp with setTimeout by a random delay between 0.1 to 3.0s
+  - method called within `moleUp()` to retrieve the exposed mole
+  - once called, `moleTrigger()` is called again to queue the next mole
 
-```js
-let duration = Math.ceil(Math.random() * 15) * 100 + 500; //duration in between 0.5-2.0s
-let delay = Math.ceil(Math.random() * 30) * 100; //duration in 0.1s divisions between 0.3-3.0s
-setTimeout(moleUp(duration), delay);
-```
+- `hammerClick(occupancy, difficulty)`: click method
 
-- moleUp(duration) => (): method
+  - action for mouse clicks to hit mole
+  - mouse click is assigned to player 1 only
 
-- random tileId
-- make appear
-- renderGameBoard
-- random duration ==> (random btn 2 sec)
-- setTimeout(moleDown, duration)
+- `hammerPress(keymap, occupancy, difficulty)`: keypress method
 
-```js
-const moleUp = (duration) => () => {
-  const tileId = Math.floor(Math.random() * 9);
-  //$tiles.eq[tileId].addClass("up");
-  renderGameBoard(tileId, "up");
-  setTimeout(moleDown(tileId), duration);
-};
-```
+  - action for keypresses
+  - reads from pre-defined keymap table for players 1 and 2
 
-- moleDown(tileId) => (): method
+- `hammerCheck(target, player, occupancy, difficulty)`: method
+  - method to check if an occupied tile is hit, and by which player
+  - updates score and renders game board
 
-- change state of mole
-- renderGameBoard
-- call moleTrigger()
+#### Rendering methods
 
-```js
-const moleDown = (tileId) => () => {
-  // moledown logic
-  renderGameScreen;
-  // call moleTrigger to keep engine running
-  moleTrigger();
-};
-```
+- `renderHelpScreen()`: method
 
-- hammerPress(): method
+  - opens and closes game tutorial
 
-- check class available on square clicked
-- if up, then register hit
-- if down, register miss
-- if hit, do nothing
-- call moleTrigger()
+- `renderNameInput(playermode)`: method
 
-```js
-if ($(e.currentTarget).hasClass("up")) {
-  $(e.currentTarget).addClass("hit");
-  setTimeout(() => {
-    $(e.currentTarget).removeClass("hit");
-  }, 100);
-  score++;
-  renderScore();
-} else if (!$(e.currentTarget).hasClass("hit")) {
-  missed++;
-}
-```
+  - UI element to toggle name input for player 1 or player 2 based on user selection
 
-- endGame(): method
-- stop timer
-- save score and stats
-- stop moleTrigger
-- renderGameOver()
-- scoreTracker(): method
+- `renderItemFlash(target)`: method
 
-1. Render method:
+  - UI element for visual feedback to various event
 
-- renderStartScreen()
-- renderGameScreen(gameMode, player)
-- renderGameBoard($parent, tilesArr)
+- `renderStartScreen()`: method
 
-  - get status of tiles from array
-  - append list of tiles to parent
+  - renders the game start screen
 
-  ```js
-  const renderGameBoard = (id, state) => {
-    let $current;
-    if (state === "up") {
-      $tiles.eq[id].addClass("up");
-    } else if (state === "down") {
-      $tiles.eq[id].removeClass("up");
-    } else if (state === "hit") {
-      $tiles.eq[id].addClass("hit");
-    }
-  };
-  ```
+- `renderGameScreen(players)`: method
 
-- renderTimer();
-- renderGameOver()
+  - renders the game screen (player HUD and game board)
+
+- `renderPreCountdown(secs)`: method
+
+  - renders the warm up timer before starting the game
+
+- `renderScore(player, score)`: method
+
+  - updates player's score on HUD
+
+- `renderGameBoard(id, state)`: method
+
+  - refreshes game board with appearing and disappearing moles
+
+- `renderTimer(state)`: method
+
+  - renders the game countdown timer
+  - visual feedback when time is running out
+
+- `renderGameOver(players)`: method
+  - renders the game over screen
+  - shows game results
+
+#### General purpose functions
+
+- `randomMinMax(min, max)`: method
+
+  - method to generate a random range
+
+- `invokeChance(percent)`: method
+
+  - method to invoke a function based on declared chance (%)
+
+- `randomTileId(occupancy)`: method
+  - method to check for vacant tile and return a random tile id for calling a mole
 
 ## Wireframes
 
@@ -214,7 +175,7 @@ Leaderboard _Not included in MVP_
 | Game ending warning counter                                                   |                    |                    | :heavy_check_mark: |
 | Keymapping to enable keyboard input                                           |                    |                    | :heavy_check_mark: |
 | Local 2-player pvp mode (keyboard)                                            |                    |                    | :heavy_check_mark: |
-| User tutorial on start page                                                   | :heavy_check_mark: |                    |                    |
+| User tutorial on start page                                                   |                    |                    | :heavy_check_mark: |
 | Custom keymapping                                                             | :heavy_check_mark: |                    |                    |
 
 ## References

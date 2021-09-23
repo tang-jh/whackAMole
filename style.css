@@ -148,7 +148,7 @@ body {
   text-align: center;
   background-color: lightblue;
   width: 600px;
-  height: 400px;
+  height: 480px;
   border-radius: 3em;
   padding: 5%;
   margin: 5rem;
@@ -224,7 +224,7 @@ button:hover {
   margin: 15px;
   background-color: lightgray;
   border: 1px solid gray;
-  animation: disappear 0.15s ease;
+  animation: disappear 0.17s ease;
 }
 
 h1 {
@@ -233,12 +233,22 @@ h1 {
 
 .up {
   background-color: greenyellow;
-  animation: appear 0.15s ease;
+  animation: appear 0.17s ease;
 }
 
-.hit {
+/* .hit {
   background-color: lightpink;
   animation: hammered 0.15s ease;
+} */
+
+.p1-hit {
+  background-color: mediumblue;
+  animation: hammered 0.17s ease;
+}
+
+.p2-hit {
+  background-color: mediumvioletred;
+  animation: hammered 0.17s ease;
 }
 
 @keyframes appear {
@@ -255,13 +265,21 @@ h1 {
 
 @keyframes disappear {
   0% {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
+
+  10% {
+    transform: scale(1);
+  }
+
   50% {
-    transform: scale(0.7);
+    transform: scale(0.8);
   }
   80% {
-    transform: scale(0.6);
+    transform: scale(0.5);
+  }
+  90% {
+    transform: scale(1.05);
   }
 }
 

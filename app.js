@@ -3,7 +3,7 @@ const main = () => {
   const startGame = (players, difficulty) => {
     //(playerName, gameMode)
     // Init game data
-    game.timeLeft = 10;
+    game.timeLeft = 60;
     game.difficulty = difficulty;
     game.lastSprint = 5;
 
@@ -176,7 +176,7 @@ const main = () => {
         console.log("PROVOKED MOLE");
         moleTrigger(occupancy, difficulty);
       }
-      renderGameBoard(tileId, HIT);
+      renderGameBoard(tileId, HIT, player.id);
       setTimeout(() => {
         renderGameBoard(tileId, UNHIT);
         occupancy[tileId] = FREE;
@@ -266,18 +266,26 @@ const main = () => {
     $target.text(score);
   };
 
-  const renderGameBoard = (id, state) => {
+  const renderGameBoard = (id, state, playerId) => {
     if (state === UP) {
       $(`#${id}`).addClass(UP);
       console.log("renderGameboard up");
-    } else if (state === DOWN) {
+    }
+    if (state === DOWN) {
       $(`#${id}`).removeClass(UP);
       console.log("renderGameboard down");
-    } else if (state === HIT) {
-      $(`#${id}`).addClass(HIT).removeClass(UP);
-      console.log("renderGameboard hit");
-    } else if (state === UNHIT) {
-      $(`#${id}`).removeClass(HIT);
+    }
+    if (state === HIT) {
+      if (playerId === P1) {
+        $(`#${id}`).addClass(`${HIT} ${P1HIT}`).removeClass(UP);
+        console.log("renderGameboard P1 hit");
+      } else if (playerId === P2) {
+        $(`#${id}`).addClass(`${HIT} ${P2HIT}`).removeClass(UP);
+        console.log("renderGameboard P2 hit");
+      }
+    }
+    if (state === UNHIT) {
+      $(`#${id}`).removeClass(`${HIT} ${P1HIT} ${P2HIT}`);
       console.log("renderGameboard unhit");
     }
   };
@@ -296,24 +304,37 @@ const main = () => {
     }
   };
 
+  // ! To update
   const renderGameOver = (players) => {
     const getAccuracy = (score, missed) => {
       return score === 0 && missed === 0
         ? 0
         : ((score / (score + missed)) * 100).toFixed(1);
     };
+    const getPerformance = (score, accuracy) => {
+      return ((score * accuracy) / 100).toFixed(1);
+    };
     if (players === SINGLEPLAYER) {
+      const p1Accuracy = getAccuracy(player1.score, player1.missed);
+      const p1Performance = getPerformance(player1.score, p1Accuracy);
       $p1NameReport.text(player1.playername);
       $p1ScoreReport.text(player1.score);
-      $p1AccuracyReport.text(getAccuracy(player1.score, player1.missed));
+      $p1AccuracyReport.text(p1Accuracy);
+      $p1PerformanceReport.text(p1Performance);
       $p2ReportContainer.addClass("off-screen");
     } else if (players === TWOPLAYER) {
+      const p1Accuracy = getAccuracy(player1.score, player1.missed);
+      const p1Performance = getPerformance(player1.score, p1Accuracy);
+      const p2Accuracy = getAccuracy(player2.score, player2.missed);
+      const p2Performance = getPerformance(player2.score, p2Accuracy);
       $p1NameReport.text(player1.playername);
       $p1ScoreReport.text(player1.score);
-      $p1AccuracyReport.text(getAccuracy(player1.score, player1.missed));
+      $p1AccuracyReport.text(p1Accuracy);
+      $p1PerformanceReport.text(p1Performance);
       $p2NameReport.text(player2.playername);
       $p2ScoreReport.text(player2.score);
       $p2AccuracyReport.text(getAccuracy(player2.score, player2.missed));
+      $p2PerformanceReport.text(p2Performance);
       $p2ReportContainer.removeClass("off-screen");
     }
 
@@ -331,6 +352,8 @@ const main = () => {
   const UP = "up";
   const DOWN = "down";
   const HIT = "hit";
+  const P1HIT = "p1-hit";
+  const P2HIT = "p2-hit";
   const UNHIT = "unhit";
   const PLAYERMODEBUTTONS = "playermode";
   const PLAYERMODESELECT = "player-select";
@@ -410,12 +433,12 @@ const main = () => {
     z: { player: P1, tile: 6 },
     x: { player: P1, tile: 7 },
     c: { player: P1, tile: 8 },
-    i: { player: P2, tile: 0 },
-    o: { player: P2, tile: 1 },
-    p: { player: P2, tile: 2 },
-    k: { player: P2, tile: 3 },
-    l: { player: P2, tile: 4 },
-    ";": { player: P2, tile: 5 },
+    p: { player: P2, tile: 0 },
+    "[": { player: P2, tile: 1 },
+    "]": { player: P2, tile: 2 },
+    l: { player: P2, tile: 3 },
+    ";": { player: P2, tile: 4 },
+    "'": { player: P2, tile: 5 },
     ",": { player: P2, tile: 6 },
     ".": { player: P2, tile: 7 },
     "/": { player: P2, tile: 8 },
@@ -456,6 +479,8 @@ const main = () => {
   const $p2ScoreReport = $("#p2-score-report");
   const $p1AccuracyReport = $("#p1-accuracy-report");
   const $p2AccuracyReport = $("#p2-accuracy-report");
+  const $p1PerformanceReport = $("#p1-performance-report");
+  const $p2PerformanceReport = $("#p2-performance-report");
   const $playAgain = $("#play-again");
 
   $closeHelp.on("click", () => {
