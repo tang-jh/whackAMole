@@ -3,7 +3,7 @@ const main = () => {
   const startGame = (players, difficulty) => {
     //(playerName, gameMode)
     // Init game data
-    game.timeLeft = 60;
+    game.timeLeft = 10;
     game.difficulty = difficulty;
     game.lastSprint = 5;
 
@@ -192,25 +192,25 @@ const main = () => {
   // Rendering methods
   const renderHelpScreen = (state) => {
     if (state === OPEN) {
-      $helpScreen.addClass("on-screen").removeClass("off-screen");
+      $helpScreen.addClass(ONSCREEN).removeClass(OFFSCREEN);
     } else if (state === CLOSE) {
-      $helpScreen.removeClass("on-screen").addClass("off-screen");
+      $helpScreen.removeClass(ONSCREEN).addClass(OFFSCREEN);
     }
   };
 
   const renderNameInput = (playermode) => {
     if (playermode === SINGLEPLAYER) {
-      $p1Input.addClass("on-screen").removeClass("off-screen");
-      $p2Input.addClass("off-screen").removeClass("on-screen");
+      $p1Input.addClass(ONSCREEN).removeClass(OFFSCREEN);
+      $p2Input.addClass(OFFSCREEN).removeClass(ONSCREEN);
     } else if (playermode === TWOPLAYER) {
-      $p1Input.addClass("on-screen").removeClass("off-screen");
-      $p2Input.addClass("on-screen").removeClass("off-screen");
+      $p1Input.addClass(ONSCREEN).removeClass(OFFSCREEN);
+      $p2Input.addClass(ONSCREEN).removeClass(OFFSCREEN);
     }
   };
 
   const renderStartScreen = () => {
-    $gameOver.toggleClass("on-screen off-screen");
-    $startScreen.toggleClass("on-screen off-screen");
+    $gameOver.toggleClass(`${ONSCREEN} ${OFFSCREEN}`);
+    $startScreen.toggleClass(`${ONSCREEN} ${OFFSCREEN}`);
   };
 
   const renderItemFlash = (target) => {
@@ -225,12 +225,12 @@ const main = () => {
     $gameScreen.toggleClass("on-screen off-screen");
     if (players === SINGLEPLAYER) {
       console.log("Singleplayer");
-      $p2HUD.removeClass("on-screen").addClass("off-screen");
+      $p2HUD.removeClass(ONSCREEN).addClass(OFFSCREEN);
       $p1NameHUD.text(player1.playername);
       $p1ScoreHUD.text(player1.score);
     } else if (players === TWOPLAYER) {
       console.log("Twoplayers");
-      $p2HUD.removeClass("off-screen").addClass("on-screen");
+      $p2HUD.removeClass(OFFSCREEN).addClass(ONSCREEN);
       $p1NameHUD.text(player1.playername);
       $p1ScoreHUD.text(player1.score);
       $p2NameHUD.text(player2.playername);
@@ -242,15 +242,15 @@ const main = () => {
   const renderPreCountdown = (secs) => {
     const displayTime = 1;
     if (secs > displayTime) {
-      $warmup.removeClass("off-screen");
+      $warmup.removeClass(OFFSCREEN);
       $preCountdown.text(secs - displayTime);
       renderItemFlash($preCountdown);
     } else if (secs === displayTime) {
-      $warmup.removeClass("off-screen");
+      $warmup.removeClass(OFFSCREEN);
       $preCountdown.text("Go!");
       renderItemFlash($preCountdown);
     } else if (secs === 0) {
-      $warmup.addClass("off-screen");
+      $warmup.addClass(OFFSCREEN);
     }
   };
 
@@ -314,6 +314,15 @@ const main = () => {
     const getPerformance = (score, accuracy) => {
       return ((score * accuracy) / 100).toFixed(1);
     };
+    const getWinner = (p1result, p2result) => {
+      if (p1result === p2result) {
+        return DRAW;
+      } else if (p1result > p2result) {
+        return P1;
+      } else {
+        return P2;
+      }
+    };
     if (players === SINGLEPLAYER) {
       const p1Accuracy = getAccuracy(player1.score, player1.missed);
       const p1Performance = getPerformance(player1.score, p1Accuracy);
@@ -321,12 +330,39 @@ const main = () => {
       $p1ScoreReport.text(player1.score);
       $p1AccuracyReport.text(p1Accuracy);
       $p1PerformanceReport.text(p1Performance);
-      $p2ReportContainer.addClass("off-screen");
+      $p2ReportContainer.addClass(OFFSCREEN);
     } else if (players === TWOPLAYER) {
       const p1Accuracy = getAccuracy(player1.score, player1.missed);
       const p1Performance = getPerformance(player1.score, p1Accuracy);
       const p2Accuracy = getAccuracy(player2.score, player2.missed);
       const p2Performance = getPerformance(player2.score, p2Accuracy);
+      const winner = getWinner(p1Performance, p2Performance);
+
+      if (winner === DRAW) {
+        $p1Win
+          .removeClass(`${WINNER} ${OFFSCREEN}`)
+          .addClass(`${DRAW} ${ONSCREEN}`)
+          .text("DRAW");
+        $p2Win
+          .removeClass(`${WINNER} ${OFFSCREEN}`)
+          .addClass(`${DRAW} ${ONSCREEN}`)
+          .text("DRAW");
+      } else if (winner === P1) {
+        $p1Win
+          .removeClass(`${DRAW} ${OFFSCREEN}`)
+          .addClass(`${WINNER} ${ONSCREEN}`)
+          .text("WINNER!");
+        $p2Win.attr("class", "").text("");
+      } else if (winner === P2) {
+        $p2Win
+          .removeClass(`${DRAW} ${OFFSCREEN}`)
+          .addClass(`${WINNER} ${ONSCREEN}`)
+          .text("WINNER!");
+        $p1Win.attr("class", "").text("");
+      }
+
+      console.log(`winner ${winner}`);
+
       $p1NameReport.text(player1.playername);
       $p1ScoreReport.text(player1.score);
       $p1AccuracyReport.text(p1Accuracy);
@@ -335,15 +371,17 @@ const main = () => {
       $p2ScoreReport.text(player2.score);
       $p2AccuracyReport.text(getAccuracy(player2.score, player2.missed));
       $p2PerformanceReport.text(p2Performance);
-      $p2ReportContainer.removeClass("off-screen");
+      $p2ReportContainer.removeClass(OFFSCREEN);
     }
 
-    $gameScreen.toggleClass("on-screen off-screen");
-    $gameOver.toggleClass("on-screen off-screen");
+    $gameScreen.toggleClass(`${ONSCREEN} ${OFFSCREEN}`);
+    $gameOver.toggleClass(`${ONSCREEN} ${OFFSCREEN}`);
   };
 
   //* DATA
   // Enum values
+  const ONSCREEN = "on-screen";
+  const OFFSCREEN = "off-screen";
   const OPEN = "open";
   const CLOSE = "close";
   const OCCUPIED = 1;
@@ -365,6 +403,8 @@ const main = () => {
   const P1 = "player1";
   const P2 = "player2";
   const HURRY = "hurry";
+  const DRAW = "draw";
+  const WINNER = "winner";
 
   // Game data
   const game = {
@@ -481,6 +521,8 @@ const main = () => {
   const $p2AccuracyReport = $("#p2-accuracy-report");
   const $p1PerformanceReport = $("#p1-performance-report");
   const $p2PerformanceReport = $("#p2-performance-report");
+  const $p1Win = $("#p1-win");
+  const $p2Win = $("#p2-win");
   const $playAgain = $("#play-again");
 
   $closeHelp.on("click", () => {

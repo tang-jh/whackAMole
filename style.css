@@ -147,7 +147,7 @@ body {
 #report {
   text-align: center;
   background-color: lightblue;
-  width: 600px;
+  width: 750px;
   height: 480px;
   border-radius: 3em;
   padding: 5%;
@@ -166,6 +166,24 @@ body {
 #p2-report {
   color: mediumvioletred;
   margin: 2rem;
+}
+
+.winner {
+  margin-left: 1rem;
+  padding: 0 5px;
+  background-color: ivory;
+  color: goldenrod;
+  border: goldenrod 2px solid;
+  animation: pulse 1s infinite;
+}
+
+.draw {
+  margin-left: 1rem;
+  padding: 0 5px;
+  background-color: ivory;
+  color: gray;
+  border: gray 2px solid;
+  animation: pulse 1s infinite;
 }
 
 #time-display {
@@ -236,11 +254,6 @@ h1 {
   animation: appear 0.17s ease;
 }
 
-/* .hit {
-  background-color: lightpink;
-  animation: hammered 0.15s ease;
-} */
-
 .p1-hit {
   background-color: mediumblue;
   animation: hammered 0.17s ease;
@@ -289,5 +302,19 @@ h1 {
   }
   60% {
     transform: scaleY(0.8);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+  }
+
+  70% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(0.95);
   }
 }
