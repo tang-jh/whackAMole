@@ -14,6 +14,7 @@ To build a browser game of Whack-a-mole.
 | ------- | ------ | ------------------------------------------------- |
 | game    | object | timeLeft(str), modeSetting(obj), lastSprint(num)  |
 | player1 | object | id(str), playername(str), score(num), missed(num) |
+| player2 | object | id(str), playername(str), score(num), missed(num) |
 | keymap  | object | characters(keys), object(player(str), tile(str))  |
 
 ### Logic needed:
@@ -31,9 +32,9 @@ To build a browser game of Whack-a-mole.
   - method to set a delay and duration value for subsequent mole to be called
   - time range is based on difficulty setting
 
-- `moleUp(duration, occupancy, difficulty)`: method
+- `moleUp(duration, occupancy, difficulty, limit)`: method
 
-  - render game board with the appearing mole
+  - render game board with the appearing mole if number of occupied tiles is less than the defined limit
   - update the occupancy matrix
   - set timed call of retrieving `this` mole
 
@@ -177,5 +178,3 @@ Leaderboard _Not included in MVP_
 | Local 2-player pvp mode (keyboard)                                            |                    |                    | :heavy_check_mark: |
 | User tutorial on start page                                                   |                    |                    | :heavy_check_mark: |
 | Custom keymapping                                                             | :heavy_check_mark: |                    |                    |
-
-## References

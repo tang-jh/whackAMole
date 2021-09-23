@@ -3,7 +3,7 @@ const main = () => {
   const startGame = (players, difficulty) => {
     //(playerName, gameMode)
     // Init game data
-    game.timeLeft = 10;
+    game.timeLeft = 30;
     game.difficulty = difficulty;
     game.lastSprint = 5;
 
@@ -82,17 +82,19 @@ const main = () => {
     return Math.ceil(Math.random() * (max - min)) + min;
   };
 
-  const randomTileId = (occupancy) => {
-    if (
-      Object.values(occupancy).every((item) => {
-        item === 1;
-      })
-    ) {
-      return false;
+  const randomTileId = (occupancy, limit) => {
+    let filled = 0;
+    for (let i = 0; i < 9; i++) {
+      if (occupancy[i] === 1) {
+        filled++;
+      }
     }
-    let vacant = Object.keys(occupancy);
-    const tileId = vacant[Math.floor(Math.random() * vacant.length)];
-    return tileId;
+
+    if (filled < limit) {
+      let vacant = Object.keys(occupancy);
+      const tileId = vacant[Math.floor(Math.random() * vacant.length)];
+      return tileId;
+    }
   };
 
   const provokeMole = (percent) => {
@@ -111,20 +113,26 @@ const main = () => {
         game.modeSetting[difficulty].delay.min,
         game.modeSetting[difficulty].delay.max
       );
+      const limit = game.modeSetting[difficulty].limit;
+      console.log(`moleTrigger limit = ${limit}`);
       setTimeout(() => {
-        moleUp(duration, occupancy, difficulty);
+        moleUp(duration, occupancy, difficulty, limit);
       }, delay);
     } else if (game.timeLeft <= TRIGGERBUFFER) {
       return;
     }
   };
 
-  const moleUp = (duration, occupancy, difficulty) => {
+  const moleUp = (duration, occupancy, difficulty, limit) => {
     console.log("moleup called");
-    let tileId = randomTileId(occupancy);
+    // Check occupancy
+    let tileId = randomTileId(occupancy, limit);
+    console.log(`Checking occupancy. tileId: ${tileId}`);
     if (tileId === false) {
       return;
     }
+
+    // Invoke mole
     occupancy[tileId] = OCCUPIED;
     console.log(occupancy);
     renderGameBoard(tileId, UP);
@@ -304,7 +312,6 @@ const main = () => {
     }
   };
 
-  // ! To update
   const renderGameOver = (players) => {
     const getAccuracy = (score, missed) => {
       return score === 0 && missed === 0
@@ -386,7 +393,7 @@ const main = () => {
   const CLOSE = "close";
   const OCCUPIED = 1;
   const FREE = 0;
-  const TRIGGERBUFFER = 2;
+  const TRIGGERBUFFER = 1;
   const UP = "up";
   const DOWN = "down";
   const HIT = "hit";
@@ -421,6 +428,7 @@ const main = () => {
           max: 2000,
         },
         provokeChance: 10,
+        limit: 3,
       },
       "btn-normal": {
         duration: {
@@ -431,7 +439,8 @@ const main = () => {
           min: 400,
           max: 1000,
         },
-        provokeChance: 20,
+        provokeChance: 30,
+        limit: 3,
       },
       "btn-hard": {
         duration: {
@@ -443,6 +452,7 @@ const main = () => {
           max: 600,
         },
         provokeChance: 50,
+        limit: 4,
       },
     },
     lastSprint: 5,
